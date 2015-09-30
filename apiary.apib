@@ -1138,3 +1138,41 @@ A resource which returns a payment object plans according to given duration in d
                 "status": 409,
                 "detail": "Payment is not in status draft"
             }
+
+# Group Search
+
+## Suggestions [/api/search/:query/suggestions]
+Suggestions are completed words based on the provided {query}
+
+### Get Suggestions [GET /api/search/{query}/suggestions{?limit}]
+This action returns list of suggestions according to the provided {query} value.
+This list will contain only values which are relevant to the current user.
+
+The listed suggestions will start with the {query} that was provided in the url.
+The list of suggestions is sorted by relevance, the most relevant results at the top.
+The {limit} parameter limits the number of suggestions that are returned. The highest limit is 10. The default {limit} value is 10.
+
++ Request (application/json)
+
++ Parameters
+
+    + query (required, string) ... String
+    + limit (optional, string, `10`) ... Limit results from 1-10, if not provided returns default 10
+
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "query": "Vale",
+                "limit": 10,
+                "results": [
+                    "Valentina",
+                    "Valentina71@hotmail.com"
+                ],
+                "_links": {
+                    "self": {
+                        "href": "https://local.behalf.com/api/search/Valentina/suggestions"
+                }
+            }
