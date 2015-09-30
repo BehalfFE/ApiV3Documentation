@@ -201,7 +201,7 @@ The Behalf API supports a soft versioning policy which provides for changes in b
 
 Any modification of input, output or behavior of an existing (and deployed) API must be done on a new version and allow for an essentially different API to replace the old one in the new version. Naturally, the old version must continue to work and keep to its previous behavior regardless of changes to any other version, higher or lower.
 
-Version negotiation is done through the URL path and is required to be specified. An unknown or unsupported version will be rejected outright.
+Version negotiation is done through the URL path. An unknown or unsupported version will be rejected outright. If no version is specified, the default version used is the latest available version of the api.
 
 
 # Standard GET query parameters
