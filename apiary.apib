@@ -162,7 +162,7 @@ Credentials are provided as requested and only a single pair for every single us
 ### Using credentials to obtain a token
 To obtain an Oauth token a request should be sent to
     
-    GET /oauth
+    GET /api/oauth
     {
         "grant_type": "client_credentials",
         "client_id": <company_id>,
@@ -172,7 +172,7 @@ To obtain an Oauth token a request should be sent to
 which will return a response of
     
     {
-      "access_token": <Oauth_token>,
+      "access_token": <access_token>,
       "expires_in": 3600,
       "token_type": "Bearer",
       "scope": null
