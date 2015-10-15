@@ -34,9 +34,11 @@ Resource removal is done using the DELETE action. Parameters are passed in the q
     DELETE /v3/leads/<leadid>
 
 # Required headers
-The Behalf API strictly requires several headers to be sent in order to perform authentication and identify legitimate requests. All requests must include the following headers:
+The Behalf API strictly requires several headers to be sent in order to perform authentication and identify legitimate requests.
 
-**X-Behalf-Signature**: An authentication signature used for authentication. More details in the authentication section
+All requests must include the following headers:
+
+**X-Behalf-Audit**: An email address representing the current user active on the API wire. This field is used to track and differentiate between users for audit purposes, when a single authentication credentials set is provided in an organisation.
 
 **Accept**: The client should specify the desired response format. For now, only application/json is supported.
 
