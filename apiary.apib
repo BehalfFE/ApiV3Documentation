@@ -821,6 +821,10 @@ Payment entities include all the relevant information held by Behalf for a parti
 ### Create a new payment [POST]
 
 Create a payment entity with basic information. Note that creating a transaction does not submit it.
+Both supplierCompanyId and customerCompanyId must be specified explicitly.
+
+
+A vendor may only specify his own company-id in supplierCompanyId
 
 + Request (application/json)
 
