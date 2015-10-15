@@ -946,7 +946,7 @@ Create a payment entity with basic information. Note that creating a transaction
                 "total_items": 6
             }
 
-### Step payment workflow [PATCH]
+### Step payment workflow [PATCH /api/payments/{paymentId}]
 Accepted properties:
 * status - can be changed to "declined" or "confirm". Certain workflows may not allow a status to be changed to the requested status.
 accepets 'canceled' or 'confirm'
@@ -972,6 +972,45 @@ accepets 'canceled' or 'confirm'
                 "customerBankId": "a06J000000Bqqn4IAB",
                 "amount": 345,
                 "status": "DRAFT",
+                "termsAndConditions": false,
+                "orderId": null,
+                "messageToBuyer": null,
+                "messageToSeller": null,
+                "referred": false,
+                "submissionDate": "2015-02-22",
+                "initialDate": "2015-02-22",
+                "payDate": null,
+                "payoutMethod": "Virtual Card",
+                "totalToCollect": 357,
+                "outstandingAmount": 357,
+                "numSetteledRepayments": 0,
+                "_links": {
+                    "tnc": {"href": "http://www.behalf.com/termsAndConditions"}
+                }
+            }
+
++ Request (application/json)
+
+    + Body
+    
+            {
+                "status": "confirm"
+            }
+                
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "paymentId": "006J000000HwiPGIAZ",
+                "supplierCompanyId": "001J0000011DTrDIAW",
+                "customerCompanyId": "001J000001YxXxwIAF",
+                "supplierCompany": {
+                    "name": "Behalf Vendor"
+                },
+                "customerBankId": "a06J000000Bqqn4IAB",
+                "amount": 345,
+                "status": "SUBMITTED",
                 "termsAndConditions": false,
                 "orderId": null,
                 "messageToBuyer": null,
