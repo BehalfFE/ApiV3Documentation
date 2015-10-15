@@ -1034,13 +1034,21 @@ accepets 'canceled' or 'confirm'
             }
 
 ### Update Payment details [PUT /api/payments/{paymentId}?action=customerUpdate]
-Update the only the repaymentFrequency of an Payment.  This action can only be performed on the customer of the payment  himself, for a vendor with offer Net. 
+Update the only the repaymentFrequency of an Payment.  This action can only be performed on the customer of the payment  himself, for a vendor with offer Net.
+
+Vendors may only update the following fields:
+"amount","orderId","messageToBuyer","payoutMethod"
+
+Customers may only update the "repaymentFrequency" field
+
 + Parameters
+
     + action (required, string, `customerUpdate`) 
+
 + Request (application/json)
 
     + Body
-    
+
             {
                 "paymentId": "006J000000HwiPGIAZ",
                 "repaymentFrequency": "Net",
