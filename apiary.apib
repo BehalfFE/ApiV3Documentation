@@ -61,8 +61,7 @@ Dates and DateTime elements are explicitly expected to be formatted in ISO8601.
 DateTime elements accept a timezone in input but will always return a UTC formatted ISO8601 string.
 
 Paramters that accept 'me' as input, will also accept 'ME', 'Me', 'yo', 'ich', 'ge', 'mig' & 'meg'.
-The API will replace those symbols with the requestor ID.
-
+The API will replace those symbols with the current client's ID.
 
 
 ## Response Codes
@@ -626,15 +625,16 @@ An account's business address sub-resource. This resource contains location and 
                 "phone": "9718332561"
             }
 
-## Account Terms [/api/account/{accountId}/terms{?vendor}]
+## Account Terms [/api/account/{accountId}/terms]
 Account subresource that describes the account's available terms. This resource is only available to authenticated linked users or to the owner of the account.
 + Parameters
-    + accountId (required, string, `BHae12d442123`, `me`) ... Unique identifier of the /account resource
-    + vendor (optional, string, `BHae12d442123`) ... Unique identifier of the vendor to cross terms with. Can also accept 'me' value.
+    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account resource. Value of _me_ uses the current client as the vendor.
 
-### Retrieve account terms [GET]
-Retrieve a terms resource for the requested account. This action may cause terms to be recalcualted for the account.
-If a vendor is specified, the terms are provided for an expected transaction between the customer's account and the specified vendor.
+### Retrieve Account Terms [GET]
+Retrieve a terms resource for the requested account.
+
+**Note**: This action may cause terms to be recalcualted for the account.
+
 + Response 200 (application/json)
 
         {
@@ -651,19 +651,21 @@ If a vendor is specified, the terms are provided for an expected transaction bet
 
 + Response 202 (application/json)
 
-        When preapproval is in process, we retrive current/empty terms untill the preapproval will be done
+    When preapproval is in process, we retrieve current/empty terms until the preapproval is done
 
-        {
-            "accountId": "BHae12d442123",
-            "line": 5000,
-            "balance": 4500,
-            "maxRepayment": 60,
-            "feePer1K": 20,
-            "grace": null,
-            "minAmount": 300,
-            "maxAmount": 5000,
-            "repaymentsFrequency": "Monthly|Daily"
-        }
+    + Body
+
+            {
+                "accountId": "BHae12d442123",
+                "line": 5000,
+                "balance": 4500,
+                "maxRepayment": 60,
+                "feePer1K": 20,
+                "grace": null,
+                "minAmount": 300,
+                "maxAmount": 5000,
+                "repaymentsFrequency": "Monthly|Daily"
+            }
           
           
 + Response 403 (application/json)
@@ -708,6 +710,31 @@ If a vendor is specified, the terms are provided for an expected transaction bet
                 "status": 532,
                 "detail": "The account was declined a credit line"
             }
+
+### Retrieve Transaction Terms [GET /api/account/{accountId}/terms{?vendor}]
+If the **vendor** parameter is specified, the terms are provided for an expected transaction between the customer's account and the specified vendor.
+
+Error responses and the **In Process** scenario remain the same.
+
+**Note**: This action may cause terms to be recalcualted for the account.
+
++ Parameters
+    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account resource. Value of _me_ uses the current client as the vendor.
+    + vendor (optional, string, `BHae12d442123`) ... Unique identifier of the vendor to cross terms with. Can also accept 'me' value.
+
++ Response 200 (application/json)
+
+        {
+            "accountId": "BHae12d442123",
+            "line": 5000,
+            "balance": 4500,
+            "maxRepayment": 60,
+            "feePer1K": 20,
+            "grace": null,
+            "minAmount": 300,
+            "maxAmount": 5000,
+            "repaymentsFrequency": "Monthly|Daily"
+        }
 
 ## Customer Sales Info [/api/customer-sales-info/{linkId}]
 A resource that describes the connection between a particular customer and a particular vendor. This resource provides historical information about the customer, from the vendor's point of view.
