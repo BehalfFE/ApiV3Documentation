@@ -161,7 +161,7 @@ Credentials are provided as requested and only a single pair for every single us
 ### Using credentials to obtain a token
 To obtain an Oauth token a request should be sent to
     
-    GET /api/oauth
+    POST /api/oauth
     {
         "grant_type": "client_credentials",
         "client_id": <company_id>,
@@ -651,7 +651,7 @@ Retrieve a terms resource for the requested account.
 
 + Response 202 (application/json)
 
-    When preapproval is in process, we retrieve current/empty terms until the preapproval is done
+    While the terms calculation is in process, we will retrieve current, or empty terms.
 
     + Body
 
