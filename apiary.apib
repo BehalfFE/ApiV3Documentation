@@ -909,6 +909,7 @@ A vendor may only specify his own company-id in supplierCompanyId
                 "amount": 345,
                 "status": "DRAFT",
                 "termsAndConditions": false,
+                "termsAndConditionsUrl": null,
                 "orderId": "My-order-id",
                 "messageToBuyer": null,
                 "messageToSeller": null,
@@ -923,9 +924,6 @@ A vendor may only specify his own company-id in supplierCompanyId
                 "_links": {
                     "self": {
                         "href": "https://www.behalf.com/api/payments/006J000000HwiPGIAZ"
-                    },
-                    "tnc": {
-                        "href": "http://www.behalf.com/termsAndConditions"
                     }
                 }
             }
@@ -986,6 +984,7 @@ A vendor may only specify his own company-id in supplierCompanyId
                             "amount": 345,
                             "status": "DRAFT",
                             "termsAndConditions": false,
+                            "termsAndConditionsUrl": null,
                             "orderId": null,
                             "messageToBuyer": null,
                             "messageToSeller": null,
@@ -1014,7 +1013,7 @@ accepets 'canceled' or 'confirm'
     + Body
     
             {
-                "status": "confirm"
+                "status": "canceled"
             }
                 
 + Response 200 (application/json)
