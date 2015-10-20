@@ -38,7 +38,7 @@ The Behalf API strictly requires several headers to be sent in order to perform 
 
 All requests must include the following headers:
 
-**X-Behalf-Audit**: An email address representing the current user active on the API wire. This field is used to track and differentiate between users for audit purposes, when a single authentication credentials set is provided in an organisation. If this field is not provided, the request will fail with a 400 Bad Request error.
+**X-Behalf-Email**: An email address representing the current user active on the API wire. This field is used to track and differentiate between users for audit purposes, when a single authentication credentials set is provided in an organisation. If this field is not provided, the request will fail with a 400 Bad Request error.
 
 **Accept**: The client should specify the desired response format. For now, only application/json is supported.
 
