@@ -1088,12 +1088,10 @@ accepets 'canceled' or 'confirm'
             }
 
 ### Update Payment details [PUT /api/payments/{paymentId}?action=customerUpdate]
-Update the only the repaymentFrequency of an Payment.  This action can only be performed on the customer of the payment  himself, for a vendor with offer Net.
+Customers may only update the following fields: "repaymentFrequency"
+Field can be updated if payment vendor is offering Net.
 
-Vendors may only update the following fields:
-"orderId","messageToBuyer","description"
-
-Customers may only update the "repaymentFrequency" field
+Vendors may only update the following fields: "orderId","messageToBuyer","description"
 
 + Parameters
 
