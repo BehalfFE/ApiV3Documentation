@@ -1014,7 +1014,7 @@ accepets 'canceled' or 'confirm'
     + Body
     
             {
-                "status": "canceled"
+                "status": "confirm"
             }
                 
 + Response 200 (application/json)
@@ -1032,6 +1032,7 @@ accepets 'canceled' or 'confirm'
                 "amount": 345,
                 "status": "DRAFT",
                 "termsAndConditions": false,
+                "termsAndConditionsUrl": null,
                 "orderId": null,
                 "messageToBuyer": null,
                 "messageToSeller": null,
@@ -1043,9 +1044,7 @@ accepets 'canceled' or 'confirm'
                 "totalToCollect": 357,
                 "outstandingAmount": 357,
                 "numSetteledRepayments": 0,
-                "_links": {
-                    "tnc": {"href": "http://www.behalf.com/termsAndConditions"}
-                }
+                "_links": {}
             }
 
 + Request (application/json)
@@ -1071,6 +1070,7 @@ accepets 'canceled' or 'confirm'
                 "amount": 345,
                 "status": "SUBMITTED",
                 "termsAndConditions": false,
+                "termsAndConditionsUrl": "http://www.behalf.com/termsAndConditions?ver=0b3414a585e622869199c9f5892c7b48",
                 "orderId": null,
                 "messageToBuyer": null,
                 "messageToSeller": null,
@@ -1083,13 +1083,13 @@ accepets 'canceled' or 'confirm'
                 "outstandingAmount": 357,
                 "numSetteledRepayments": 0,
                 "_links": {
-                    "tnc": {"href": "http://www.behalf.com/termsAndConditions"}
+                    "tnc": {"href": "http://www.behalf.com/termsAndConditions?ver=0b3414a585e622869199c9f5892c7b48"}
                 }
             }
 
 ### Update Payment details [PUT /api/payments/{paymentId}?action=customerUpdate]
 Customers may only update the following fields: "repaymentFrequency"
-Field can be updated if payment vendor is offering Net.
+"repaymentFrequency" field can be updated if payment vendor is offering Net.
 
 Vendors may only update the following fields: "orderId","messageToBuyer","description"
 
@@ -1113,6 +1113,7 @@ Vendors may only update the following fields: "orderId","messageToBuyer","descri
                 "amount": 345,
                 "status": "DRAFT",
                 "termsAndConditions": false,
+                "termsAndConditionsUrl": null,
                 "orderId": null,
                 "messageToBuyer": null,
                 "messageToSeller": null,
@@ -1124,9 +1125,7 @@ Vendors may only update the following fields: "orderId","messageToBuyer","descri
                 "totalToCollect": 357,
                 "outstandingAmount": 357,
                 "numSetteledRepayments": 0,
-                "_links": {
-                    "tnc": {"href": "http://www.behalf.com/termsAndConditions"}
-                }
+                "_links": {}
             }
 
 + Response 200 (application/json)
@@ -1145,6 +1144,7 @@ Vendors may only update the following fields: "orderId","messageToBuyer","descri
                 "amount": 345,
                 "status": "DRAFT",
                 "termsAndConditions": false,
+                "termsAndConditionsUrl": null,
                 "orderId": null,
                 "messageToBuyer": null,
                 "messageToSeller": null,
@@ -1156,9 +1156,7 @@ Vendors may only update the following fields: "orderId","messageToBuyer","descri
                 "totalToCollect": 357,
                 "outstandingAmount": 357,
                 "numSetteledRepayments": 0,
-                "_links": {
-                    "tnc": {"href": "http://www.behalf.com/termsAndConditions"}
-                }
+                "_links": {}
             }
 
 ## Bank [/api/banks/{bankid}]
