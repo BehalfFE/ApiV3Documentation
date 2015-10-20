@@ -250,15 +250,28 @@ A GET request may use the limit and page query parameters to perform basic pagin
 
 # Demo (Test API)
 
-##Authentication
+## Introduction
+The API call to the Demo environment is need to be send to Demo URL: **http://demo.behalf.com/api**
 
-## How To Use
-URL: demo.behalf.com/api
-
-## Metod
+Scenario in the DEMO environment, is a response from the API returns "The positive way of request".
+For example:
+    **Check Qualification** - will return with the approval (positive).
+    **Submit payments** - will return with submited payment (positive).
+    **Banks** - Verification approval (positive).
 
 ## Authentication
-The authentication in the Demo environment is same like in the normal environment (Prod.)
+The authentication in the Demo environment is same like in the normal environment (Prod.). 
+
+## How To Use
+The use with DEMO environment API call is same like the regular API call, all the API calls works in the Demo environment.
+To working with Demo environment API call need to chenge the Demo environment 
+**URL: demo.behalf.com/api**
+
+* The HEDERS is same like in the regular environment.
+
+Example API (account) call URL: 
+**https://demo.behalf.com/api/account**
+
 
 # Group Workflow
 ## Token Resource [/api/tokens]
