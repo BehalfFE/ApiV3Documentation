@@ -248,16 +248,19 @@ A GET request may use the limit and page query parameters to perform basic pagin
 **limit** The limit parameter is the number of rows to be retrieved by any single page of the collection.
 **page** The page number to be retrieved. The first page is 1 and continues at single increments.
 
-# Demo (Test API)
+
+# Developing with the Behalf API
 
 ## Introduction
-The API call to the Demo environment is need to be send to Demo URL: **http://demo.behalf.com/api**
+Behalf provides a Demo or testing environment to use as an alternate gateway. Requests executed on this environment will behave in a manner similar to the production environment but will not actually charge or make any payouts. This makes the Demo environment a safe place to try out your integration and conduct initial integration tests.
 
-Scenario in the DEMO environment, is a response from the API returns "The positive way of request".
+Calling the Demo environment requires you use a different URL for connecting to the API: **http://demo.behalf.com/api**
+
+The Demo environment is designed so that it does not require real data for users, other than passing a syntax check. This means that some scenarios on the demo environment will behave a little differently than production.
 For example:
-    **Check Qualification** - will return with the approval (positive).
-    **Submit payments** - will return with submited payment (positive).
-    **Banks** - Verification approval (positive).
+    **Check Qualification** - Will always approve the customer.
+    **Submit payments** - Will always submit the payment regardless of other considerations.
+    **Banks** - Will always approve the bank, regardless of its details.
 
 ## Authentication
 The authentication in the Demo environment is same like in the normal environment (Prod.). 
