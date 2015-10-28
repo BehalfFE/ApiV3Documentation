@@ -672,18 +672,15 @@ Retrieve a terms resource for the requested account.
 
     While the terms calculation is in process, we will retrieve current, or empty terms.
 
+            Retry-After: 30
+
     + Body
 
             {
-                "accountId": "BHae12d442123",
-                "line": 5000,
-                "balance": 4500,
-                "maxRepayment": 60,
-                "feePer1K": 20,
-                "grace": null,
-                "minAmount": 300,
-                "maxAmount": 5000,
-                "repaymentsFrequency": "Monthly|Daily"
+                "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+                "title": "Accepted",
+                "status": 202,
+                "detail": "Terms calculation is in process, please retry in 30 secs"
             }
           
           
