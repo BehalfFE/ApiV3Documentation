@@ -312,30 +312,7 @@ Update the details of an account. This action can only be performed on the authe
 
 + Response 200 (application/json)
     
-    + Body
-    
-            {
-                "accountId": "account-id",
-                "firstName": "firstname",
-                "lastName": "lastname",
-                "contact":{
-                    "contactId": "contact-id", "email":"email"
-                },
-                "companyDetails": {
-                    "name": "company name",
-                },
-                "_links": {
-                    "self": {
-                        "href": "https://behalf.com/api/account/account-id"
-                    },
-                    "terms": {
-                        "href": "https://behalf.com/api/account/account-id/terms"
-                    },
-                    "customer-sales": {
-                        "href": "https://behalf.com/api/customer-sales-info/link-id"
-                    }
-                }
-            }
+    + Attributes (Account)
 
 ### Retrieve a collection of accounts [GET /api/account{?query}]
 
@@ -407,182 +384,22 @@ In either case, the same resource is returned. An existing resource will be upda
                 "companyDetails": {"name": "company name"}
             }
     
-    + Schema
-
-            {
-                "type": "object",
-                "required": true,
-                "properties": {
-                    "firstName": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "lastName": {
-                        "type": "string",
-                        "required": true
-                    },
-                    "contact": {
-                        "type": "object",
-                        "required": true,
-                        "properties": {
-                            "email": {
-                                "type": "string",
-                                "required": true
-                            }
-                        }
-                    },
-                    "companyDetails": {
-                        "type": "object",
-                        "required": true,
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "required": true
-                            }
-                        }
-                    }
-                }
-            }
 
 + Response 200 (application/json)
     
-    + Body
-    
-            {
-                "accountId": "account-id",
-                "firstName": "firstname",
-                "lastName": "lastname",
-                "contact":{
-                    "contactId": "contact-id", "email":"email"
-                },
-                "companyDetails": {
-                    "name": "company name",
-                },
-                "_links": {
-                    "self": {
-                        "href": "https://behalf.com/api/account/account-id"
-                    },
-                    "terms": {
-                        "href": "https://behalf.com/api/account/account-id/terms"
-                    },
-                    "customer-sales": {
-                        "href": "https://behalf.com/api/customer-sales-info/link-id"
-                    }
-                }
-            }
+    + Attributes (Account)
 
 + Response 201 (application/json)
     
-    + Body
-    
-            {
-                "accountId": "account-id",
-                "firstName": "firstname",
-                "lastName": "lastname",
-                "contact":{
-                    "contactId": "contact-id", "email":"email"
-                },
-                "companyDetails": {
-                    "name": "company name",
-                },
-                "_links": {
-                    "self": {
-                        "href": "https://behalf.com/api/account/account-id"
-                    },
-                    "terms": {
-                        "href": "https://behalf.com/api/account/account-id/terms"
-                    },
-                    "customer-sales": {
-                        "href": "https://behalf.com/api/customer-sales-info/link-id"
-                    }
-                }
-            }
+    + Attributes (Account)
 
 + Request All available parameters (application/json)
     
-    + Body
-    
-            {
-                "firstName": "firstname",
-                "lastName":  "lastname",
-                "contact": {"email":"email"},
-                "companyDetails": {
-                    "name": "company name",
-                    "duns": "DUNS number",
-                    "tin": "TIN code",
-                    "website": "http://website.com",
-                    "inceptionDate": "2002-12-25" //Also accepts unix timestamp
-                },
-                "ssn": "123456781",
-                "businessAddress": {
-                    "streetAddress": "",
-                    "zipcode": "",
-                    "apt_unit": "",
-                    "phone": ""
-                },
-                "personalAddress": {
-                    "streetAddress": "",
-                    "zipcode": "",
-                    "apt_unit": "",
-                    "phone": ""
-                }
-            }
+    + Attributes (Account Full)
 
 + Response 200 (application/json)
     
-    + Body
-    
-            {
-                "accountId": "account-id",
-                "firstName": "firstname",
-                "lastName": "lastname",
-                "contact":{
-                    "contactId": "contact-id", "email":"email"
-                },
-                "companyDetails": {
-                    "name": "company name",
-                },
-                "accountBalance": 2100,
-                "_links": {
-                    "self": {
-                        "href": "https://behalf.com/api/account/account-id"
-                    },
-                    "terms": {
-                        "href": "https://behalf.com/api/account/account-id/terms"
-                    },
-                    "customer-sales": {
-                        "href": "https://behalf.com/api/customer-sales-info/link-id"
-                    }
-                }
-            }
-
-+ Response 201 (application/json)
-    
-    + Body
-    
-            {
-                "accountId": "account-id",
-                "firstName": "firstname",
-                "lastName": "lastname",
-                "contact":{
-                    "contactId": "contact-id", "email":"email"
-                },
-                "companyDetails": {
-                    "name": "company name",
-                },
-                "accountBalance": 0,
-                "_links": {
-                    "self": {
-                        "href": "https://behalf.com/api/account/account-id"
-                    },
-                    "terms": {
-                        "href": "https://behalf.com/api/account/account-id/terms"
-                    },
-                    "customer-sales": {
-                        "href": "https://behalf.com/api/customer-sales-info/link-id"
-                    }
-                }
-            }
+    + Attributes (Account)
 
 ## Account Personal Address [/api/account/{accountId}/personalAddress]
 An account's personal address sub-resource. This resource contains location and contact details of the account's owner
@@ -1349,7 +1166,7 @@ A resource which returns a payment object plans according to given duration in d
 
 + Response 200 (application/json)
 
-    + Attributes(Account Base)
+    + Attributes(Account)
 
 
 ### Retrieve Search Suggestions [GET /api/search/{query}/suggestions{?limit}]
@@ -1387,7 +1204,7 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 
 # Data structure
 
-## Account Base (object)
+## Account (object)
 + accountId: accountId (string)
 + firstName: first name (string)
 + lastName: last name (string)
@@ -1403,3 +1220,31 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
         + href: https://behalf.com/api/account/account-id/terms
     + customer-sales
         + href: https://behalf.com/api/customer-sales-info/link-id
+
+## Account Full (object)
++ accountId: accountId (string)
++ firstName: first name (string)
++ lastName: last name (string)
++ contact
+    + contactId: contact-id (string)
+    + email: email (string)
++ companyDetails
+    + name: company name (string)
++ ssn: Account SSN (string)
++ companyDetails: Company details block (Company)
++ businessAddress: Company shipping address (Address)
++ personalAddress: Personal address (Address)
+        
+
+## Address (object)
++ streetAddress: 1st 1st st. (string)
++ zipcode: 12345 (string)
++ apt_unit: 12C (string)
++ phone: 123-456-5487 (phone)
+
+## Company (object)
++ name: company name (string)
++ duns: DUNS number (string)
++ tin: TIN code (string)
++ website: http://website.com (string)
++ inceptionDate: 2002-12-25 (date)
