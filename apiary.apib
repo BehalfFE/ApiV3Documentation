@@ -1337,10 +1337,22 @@ A resource which returns a payment object plans according to given duration in d
 
 # Group Search
 
-## Suggestions [/api/search/:query/suggestions]
-Suggestions are completed words based on the provided {query}
+## Search [/api/search]
 
-### Get Suggestions [GET /api/search/{query}/suggestions{?limit}]
+### Find Account by Email [GET /api/search/{email}/email]
+
++ Request (application/json)
+
++ Parameters
+
+    + email (required, string) ... Email address
+
++ Response 200 (application/json)
+
+    + Attributes(Account Base)
+
+
+### Retrieve Search Suggestions [GET /api/search/{query}/suggestions{?limit}]
 This action returns list of suggestions according to the provided {query} value.
 This list will contain only values which are relevant to the current user.
 
@@ -1372,3 +1384,22 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
                         "href": "https://local.behalf.com/api/search/Valentina/suggestions"
                 }
             }
+
+# Data structure
+
+## Account Base (object)
++ accountId: accountId (string)
++ firstName: first name (string)
++ lastName: last name (string)
++ contact
+    + contactId: contact-id (string)
+    + email: email (string)
++ companyDetails
+    + name: company name (string)
++ _links
+    + self
+        + href: https://behalf.com/api/account/account-id
+    + terms
+        + href: https://behalf.com/api/account/account-id/terms
+    + customer-sales
+        + href: https://behalf.com/api/customer-sales-info/link-id
