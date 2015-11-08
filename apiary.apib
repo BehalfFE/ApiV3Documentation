@@ -1215,11 +1215,11 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
     + name: company name (string)
 + _links
     + self
-        + href: https://behalf.com/api/account/account-id
+        + href: https://behalf.com/api/account/accountIdd
     + terms
-        + href: https://behalf.com/api/account/account-id/terms
-    + customer-sales
-        + href: https://behalf.com/api/customer-sales-info/link-id
+        + href: https://behalf.com/api/account/accountId/terms
+    + customerSales
+        + href: https://behalf.com/api/customerSalesInfo/linkId
 
 ## Account Full (object)
 + accountId: accountId (string)
@@ -1228,14 +1228,11 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + contact
     + contactId: contact-id (string)
     + email: email (string)
-+ companyDetails
-    + name: company name (string)
-+ ssn: Account SSN (string)
 + companyDetails: Company details block (Company)
++ ssn: Account SSN (string)
 + businessAddress: Company shipping address (Address)
 + personalAddress: Personal address (Address)
         
-
 ## Address (object)
 + streetAddress: 1st 1st st. (string)
 + zipcode: 12345 (string)
