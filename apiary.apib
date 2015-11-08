@@ -143,7 +143,7 @@ HAL Links structure example:
             "href": "https://behalf.com/api/account/account-id/terms"
         },
         "customer-sales": {
-            "href": "https://behalf.com/api/customer-sales-info/link-id"
+            "href": "https://behalf.com/api/customerSalesInfo/link-id"
         }
     }
 
@@ -569,7 +569,7 @@ Error responses and the **In Process** scenario remain the same.
             "repaymentsFrequency": "Monthly|Daily"
         }
 
-## Customer Sales Info [/api/customer-sales-info/{linkId}]
+## Customer Sales Info [/api/customerSalesInfo/{linkId}]
 A resource that describes the connection between a particular customer and a particular vendor. This resource provides historical information about the customer, from the vendor's point of view.
 The linkId parameter is returned as part of the POST /api/account action
 + Parameters
@@ -945,16 +945,12 @@ accepets 'canceled' or 'confirm'
                 }
             }
 
-### Update Payment details [PUT /api/payments/{paymentId}?action=customerUpdate]
+### Update Payment details [PUT /api/payments/{paymentId}]
 Update payment details allowing an update of certain fields within an existing payment,
 coorsponding to the user role.
 
 Customers may only update the following fields: "repaymentFrequency"
 Vendors may only update the following fields: "orderId","messageToBuyer","description"
-
-+ Parameters
-
-    + action (required, string, `customerUpdate`) 
 
 + Request (application/json)
 
