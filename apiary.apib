@@ -544,6 +544,19 @@ Retrieve a terms resource for the requested account.
                 "detail": "The account was declined a credit line"
             }
 
++ Response 400 (application/json)
+    
+    To be able and approve terms, additional data is required to be provided.
+    
+    + Body
+    
+            {
+                "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+                "title": "Bad request",
+                "status": 400,
+                "detail": "Additional data is required"
+            }
+
 ### Retrieve Transaction Terms [GET /api/account/{accountId}/terms{?vendor}]
 If the **vendor** parameter is specified, the terms are provided for an expected transaction between the customer's account and the specified vendor.
 
@@ -569,11 +582,11 @@ Error responses and the **In Process** scenario remain the same.
             "repaymentsFrequency": "Monthly|Daily"
         }
 
-## Customer info [/api/customerInfo/{linkId}]
-Customer info resource is additional data used to represent additional data provided by a vendor.
+## Additional data [/api/additionalData/{linkId}]
+Additional Data resource is additional data used to represent additional data provided by a vendor.
 
-### Update a customer info[PUT /api/customerInfo/{linkId}]
-Update customer info will overwrite any existing data.
+### Update a additional data [PUT /api/additionalData/{linkId}]
+Update additional data will overwrite any existing data.
 A flexibile array of data on the customer, provided by the vendor. Data will be saved as a document.
 
 + Request (application/json)
