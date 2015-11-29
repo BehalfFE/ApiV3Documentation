@@ -47,6 +47,8 @@ All requests must include the following headers:
 # Request parameters
 Parameters used to pass information for requests are strictly defined for their contents. Requests to the API failing to provide legal values are rejected outright.
 
+In request bodies, unless explicitly specified, a null value is considered as an explicitly empty value. In PUT or POST operations, this value will be kept empty and in PUT operations will override the current value set, whatever it may be, with an empty value. This empty value may change in actual value between different data types and resources.
+
 # Response structure
 Standard response structure will include the following header:
 
