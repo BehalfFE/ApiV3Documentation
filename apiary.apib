@@ -1155,8 +1155,47 @@ A resource which returns a payment object plans according to given duration in d
 
 + Response 200 (application/json)
 
-    + Attributes(Account)
+    + Body
+    
+            {
 
+                "id": "001J000001ZUYYkIAP",
+                "email": "finn@mailinator.com",
+                "firstName": "Mark",
+                "lastName": "Twain",
+                "companyName": "Finn_keep_me",
+                "accountType": "CUSTOMER",
+                "_links": {
+                    "self": {
+                        "href": "http://local.behalf.com/api/search/finn@mailinator.com/email"
+                    }
+                }
+            }
+            
++ Response 422 (application/json)
+
+    + Body
+    
+            {
+              "email": [
+                "The email address that you provided belongs to an account that is no longer active. Please provide a different email address."
+              ],
+              "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+              "title": "Unprocessable Entity",
+              "status": 422,
+              "detail": "Account is no longer active"
+            }
+            
++ Response 404 (application/json)
+
+    + Body
+    
+            {
+                "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+                "title": "Not Found",
+                "status": 404,
+                "detail": "User with email not@exist.com not found"
+            }
 
 ### Retrieve Search Suggestions [GET /api/search/{query}/suggestions{?limit}]
 This action returns list of suggestions according to the provided {query} value.
