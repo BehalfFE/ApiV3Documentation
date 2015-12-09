@@ -124,8 +124,6 @@ Standard errors are:
 
 **532**: Credit Line Declined.
 
-**533**: Additional data is required.
-
 Specific application errors are returned as 500 errors in the range 530 - 580
 
 ## Hypermedia links
@@ -586,10 +584,10 @@ Error responses and the **In Process** scenario remain the same.
             "repaymentsFrequency": "Monthly|Daily"
         }
 
-## Additional data [/api/additionalData/{linkId}]
+## Additional data [/api/additional-data/{link_id}]
 Additional Data resource is additional data used to represent additional data provided by a vendor.
 
-### Update a additional data [PUT /api/additionalData/{linkId}]
+### Update a additional data [PUT /api/additional-data/{link_id}]
 Update additional data will overwrite any existing data.
 A flexibile array of data on the customer, provided by the vendor. Data will be saved as a document.
 
@@ -1247,7 +1245,7 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
     + terms
         + href: https://behalf.com/api/account/accountId/terms
     + additionalData
-        + href: https://behalf.com/api/customerData/linkId
+        + href: https://behalf.com/api/additional-data/link_id
 
 ## Account Full (object)
 + accountId: accountId (string)
