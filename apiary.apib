@@ -1010,6 +1010,32 @@ A Bank resource is used to set up repayments for a granted loan. /bank represent
 + Parameters
     + bankid (required, string, `BHae12d442123`) ... Unique identifier of the /bank resource
 
+### Create & Verify Bank [POST /api/banks]
+
++ Request (application/json)
+
+    + Attributes (BankCreate)
+
++ Response 201 (application/json)
+
+    + Attributes (Bank)
+    + Body
+
+            {
+
+                "bankId": "BHae12d442123",
+                "accountId": "BHae12d442123",
+                "routing": "123456789",
+                "bankName": "Piggy Bank",
+                "bankType": "BUSINESS",
+                "number": "123456",
+                "canACH": true,
+                "depositType": "CHECKING",
+                "nameOnAccount": "Ms. Piggy",
+                "primary": true,
+                "status": "Verified"
+            }
+
 ### Change Bank state [PATCH]
 The Patch action is used to modify specific traits of a bank resource. These traits are not the bank's properties but rather are derived from its state or influence it.
 
@@ -1025,6 +1051,7 @@ The Patch action is used to modify specific traits of a bank resource. These tra
 
 + Response 200 (application/json)
 
+    + Attributes (Bank)
     + Body
 
             {
@@ -1043,23 +1070,7 @@ The Patch action is used to modify specific traits of a bank resource. These tra
             }
 
 ### Remove a Bank [DELETE]
-+ Response 200 (application/json)
-
-    + Body
-
-            {
-                "bankId": "BHae12d442123",
-                "accountId": "BHae12d442123",
-                "routing": "123456789",
-                "bankName": "Piggy Bank",
-                "bankType": "BUSINESS",
-                "number": "123456",
-                "canACH": true,
-                "depositType": "CHECKING",
-                "nameOnAccount": "Ms. Piggy",
-                "primary": true,
-                "status": "Verified"
-            }
++ Response 205 (application/json)
 
 ## Plans [/api/payments/plans?payment_id={payment_id}&duration={duration}]
 A resource which returns a payment object plans according to given duration in days.
@@ -1271,3 +1282,22 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + tin: TIN code (string)
 + website: http://website.com (string)
 + inceptionDate: 2002-12-25 (date)
+
+## BankCreate (object)
++ accountId: account the bank belongs to (required, string)
++ routing: bank routing identifier, maps to an actual bank (required, string)
++ number: Account number (required, string)
++ depositType: Defined account type (required, string)
++ nameOnAccount: Returned owner's name (required, string)
+
+## Bank (object)
++ bankId: Bank Identifier (string)
++ accountId: account the bank belongs to (required, string)
++ routing: bank routing identifier, maps to an actual bank (required, string)
++ number: Account number (required, string)
++ depositType: Defined account type (required, string)
++ nameOnAccount: Returned owner's name (required, string)
++ bankName: Identified bank name according to rtn (string)
++ canACH: Indicates this bank account is capable of using ACH (boolean)
++ primary: Indicates this bank is the account's primary bank (string)
++ status: Human readable bank account verification status (string)
