@@ -617,7 +617,42 @@ A flexibile array of data on the customer, provided by the vendor. Data will be 
                 "businesType": "partnership",
                 "yearOfIncorporation": 2012
             }
-            
+
+## Capabilities [/api/capabilities/{vendorId}]
+
+This resource maps Vendor capabilities which are granted by the Customer. These capabilities are mapped per vendor per customer and are specific to this link between the two accounts.
+
+### Retrieve capabilities for linked account [GET]
+
++ Response 200 (application/json)
+    
+    + Attributes (Capabilities)
+
+### Modify capabilities for linked account [PATCH]
+
+Change specific capabilities granted to a Vendor by the currently identified Customer.
+This operational structure is described in http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/
+
+Note the use of an array for the entity body. This is done to allows stacking of operation commands.
+
++ Request Enroll to AutoPay service (application/Json)
+    
+    + Body
+    
+            [
+                {
+                    "path": "/autoPay",
+                    "op": "replace",
+                    "value": true
+                }
+            ]
+
++ Response 200 (application/json)
+    
+    + Attributes (Capabilities)
+    + Attributes
+        + autoPay: true (boolean)
+
 # Group Pay
 All action URLs are assumed to have the /api prefix. This path directory is omitted from the examples and resource names for brevity.
 
@@ -638,7 +673,7 @@ Payment entities include all the relevant information held by Behalf for a parti
 
 + Request Customer Request (application/json)
 
-+ Response 200 (applicatio/json)
++ Response 200 (application/json)
 
     + Body
 
@@ -1303,3 +1338,8 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + canACH: Indicates this bank account is capable of using ACH (boolean)
 + primary: Indicates this bank is the account's primary bank (string)
 + status: Human readable bank account verification status (string)
+
+## Capabilities (object)
++ customerId: BHae12d442123 (string)
++ vendorId: BHae12d442123 (string)
++ autoPay: Granted autoPay capability flag (boolean)
