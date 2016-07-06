@@ -618,19 +618,21 @@ A flexibile array of data on the customer, provided by the vendor. Data will be 
                 "yearOfIncorporation": 2012
             }
 
-## Capabilities [/api/capabilities/{vendorId}]
+## Agreements [/api/agreements/{accountId}]
 
-This resource maps Vendor capabilities which are granted by the Customer. These capabilities are mapped per vendor per customer and are specific to this link between the two accounts.
+This resource maps Vendor agreements which are granted by the Customer. These agreements are mapped per vendor per customer and are specific to this link between the two accounts.
 
-### Retrieve capabilities for linked account [GET]
+### Retrieve agreements for linked account [GET]
+
+Retrieve a list of agreement objects for a specific customer. This list will contain all vendor IDs and their agreements with the specified customer.
 
 + Response 200 (application/json)
     
-    + Attributes (Capabilities)
+    + Attributes (Agreements)
 
-### Modify capabilities for linked account [PATCH]
+### Modify agreements for linked account [PATCH]
 
-Change specific capabilities granted to a Vendor by the currently identified Customer.
+Change specific agreements granted to a Vendor by the currently identified Customer. accountId in this case is expected to be a vendorId
 This operational structure is described in http://williamdurand.fr/2014/02/14/please-do-not-patch-like-an-idiot/
 
 Note the use of an array for the entity body. This is done to allows stacking of operation commands.
@@ -649,7 +651,7 @@ Note the use of an array for the entity body. This is done to allows stacking of
 
 + Response 200 (application/json)
     
-    + Attributes (Capabilities)
+    + Attributes (Agreements)
     + Attributes
         + autoPay: true (boolean)
 
@@ -1339,7 +1341,7 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + primary: Indicates this bank is the account's primary bank (string)
 + status: Human readable bank account verification status (string)
 
-## Capabilities (object)
+## Agreements (object)
 + customerId: BHae12d442123 (string)
 + vendorId: BHae12d442123 (string)
 + autoPay: Granted autoPay capability flag (boolean)
