@@ -622,25 +622,6 @@ A flexibile array of data on the customer, provided by the vendor. Data will be 
 
 This resource maps Vendor agreements which are granted by the Customer. These agreements are mapped per vendor per customer and are specific to this link between the two accounts.
 
-### Retrieve agreements for linked account [GET /api/agreements/{accountId}/]
-
-Retrieve a list of agreement objects for a specific customer. This list will contain all vendor IDs and their agreements with the specified customer.
-AccountId must be provided but can also be "me". Only a customer is allowed to perform this operation on his own agreements.
-
-+ Response 200 (application/json)
-    + Attributes
-        + _links  (array)
-            - (object)
-                + href: /api/agreements/accountId/ (string)
-        + _embedded (object)
-            + _agreements (array)
-                - (Agreements)
-                - (Agreements)
-        + page_count: 1 (number)
-        + page_size: 25 (number)
-        + total_items: 2 (number)
-
-
 ### Modify agreements for linked account [PATCH]
 
 Change specific agreements granted to a Vendor by the currently identified Customer. accountId in this case is expected to be a vendorId
