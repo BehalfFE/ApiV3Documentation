@@ -1066,11 +1066,14 @@ Creates and performs initial verification of the posted bank account information
                 "status": "Verified"
             }
 
-### Change Bank state [PATCH]
+### Change Bank state [PATCH /api/banks/{bankid}{?verify}]
 The Patch action is used to modify specific traits of a bank resource. These traits are not the bank's properties but rather are derived from its state or influence it.
 
 "primary" - Set a bank as the primary bank. The current primary bank will first be unset but not removed. A bank must be Verified in order to be eligible to become primary.
-
++ Parameters
+    + verify: `no` (string, optional) - perform verification of bank
+        + defaults: `yes`
+    
 + Request (application/json)
 
     + Body
