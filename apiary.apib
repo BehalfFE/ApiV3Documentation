@@ -290,6 +290,38 @@ All API calls work in the Demo environment, where the only change is the base UR
 **https://api.demo.behalf.com/**
 
 
+# Appendix A: API Calls Parameters
+
+More details regarding the API calls parameters
+(i.e. which are mandatory and which are optional, the property's Type and meaning etc) can be found [here](https://docs.google.com/a/zazma.com/document/d/1rGATWr_EgbGg739Z39FAl0ubb2ODeVGdcaPE4Kn6Clk/edit?usp=sharing)
+
+# Appendix B: Vendor Workflow Diagram
+
+![Alt tag](https://s3.amazonaws.com/api-documents/preapprove-workflow.png "Vendor Workflow Diagram")
+
+# Appendix C: Testing Various Scenarios
+
+In order to test various scenarios you should use special customer Accounts - i.e. with specific **companyDetails.name** values.
+
+Following are the available scenarios and the associated required Company Names:
+
+| Scenario     | API Call          | Response | Special Account Name                                                                  | Additional info|
+|--------------|-------------------|----------|-----------------------------------------------------------------------------------------|----------------|
+| Credit Line Declined| Get Account Terms |  532     | any company name that contains the string **declined** (case insenative)  | -              |
+| Credit Line calculation In Process| Get Account Terms | 202 | any company name that contains the string **inprocess** (case insenative) | changed automatically to Approved (200) after 1 min|
+| Credit Line Approved| Get Account Terms |  200     | all other company names | -              |
+
+In order to test various scenarios you should use special Payment values - i.e. with specific **orderId** values.
+
+Following are the available scenarios and the associated required Payment details:
+
+| Scenario     | API Call          | Response | Special orderId Value                                                                 | Special description Value | Special amount Value
+|--------------|-------------------|----------|-----------------------------------------------------------------------------------------|----------------|--------|
+| Payment status SUBMITTED_DECLINED | Get Payment Status | 200 | any orderId value that contains the string **decline** (case insenative) | any description value that contians the string **autosubmit** | - |
+| Payment status CUSTOMER_SUBMITED_REVIEW | Get Payment Status | 200 | any orderId value that contains the string **review** (case insenative) | any description value that contians the string **autosubmit** | When the **amount** is lower than $10,000 the status will be changed automatically to APPROVED_PAYMENT_GENERATED after 2 min; Otherwise - it will stay in CUSTOMER_SUBMITED_REVIEW |
+| Payment status APPROVED_PAYMENT_GENERATED| Get Payment Status | 200 | any OrderId value that doesn't contain the string **decline** OR **inprogress** | any description value that contians the string **autosubmit** (case insenative) | - |
+| Payment status REFFERED_TO_CUSTOMER| Get Payment Status | 200 | any OrderId value including decline and review | description doesn't contian the string **autosubmit** (case insenative) | - |
+
 
 # Group Workflow
 
@@ -391,7 +423,8 @@ After signup, a vendor can not make any changes to a customer's account.
 ## Account Personal Address [/api/account/{accountId}/personalAddress]
 An account's personal address sub-resource. This resource contains location and contact details of the account's owner
 + Parameters
-    + accountId (required, string, `BHae12d442123`, `me`) ... Unique identifier of the /account resource
+
+    + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
 
 ### Update Personal Address [PUT]
 
@@ -421,7 +454,8 @@ An account's personal address sub-resource. This resource contains location and 
 ## Account Business Address [/api/account/{accountId}/businessAddress]
 An account's business address sub-resource. This resource contains location and contact details of the account's business or company
 + Parameters
-    + accountId (required, string, `BHae12d442123`, `me`) ... Unique identifier of the /account resource
+
+    + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
 
 ### Update Business Address [PUT]
 
@@ -451,31 +485,24 @@ An account's business address sub-resource. This resource contains location and 
 ### Update Account details [PUT /api/account/{accountId}]
 Update the details of an account. This action can only be performed on the authenticated user himself or by a linked vendor before the account has passed the signup process. After signup, a vendor may not make changes to a customer's account.
 + Parameters
-    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account resource
+
+    + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
 
 + Response 200 (application/json)
 
     + Attributes (Account)
+            
+            Your customer’s email address can be edited at any point prior to sign-up.
+            
+            Unlike the account details, which cannot be updated after they are submitted,
+            you can edit your customer’s email address anytime prior to sign-up.
 
-Your customer’s email address can be edited at any point prior to sign-up.
-
-Unlike the account details, which cannot be updated after they are submitted,
-you can edit your customer’s email address anytime prior to sign-up.
-
-**Note:** The **accountId** parameter is the value that is returned as part of the **Create an Account** operation.
-(the **links.self** in the response). This action can be performed by a vendor only on his customers' accounts.
-
-+ Parameters
-    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account
-
-Your customer’s email address can be edited at any point prior to sign-up.
-
-Unlike the account details, which cannot be updated after they are submitted,
-you can edit your customer’s email address anytime prior to sign-up.
+            **Note:** The **accountId** parameter is the value that is returned as part of the **Create an Account** operation. (the **links.self** in the response). This action can be performed by a vendor only on his customers' accounts.
 
 + Request (application/json)
 
     + Body
+        
             {
                 "contact":{
                     "email":"email"
@@ -561,7 +588,8 @@ This is an Account sub-resource that describes the account's available Behalf Te
 
 **Note**: The vendor can use this resource only for **his** customers.
 + Parameters
-    + accountId (required, string, `BHae12d442123`, `me`) ... Unique identifier of the /account resource
+
+    + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
 
 ### Get Account Terms [GET]
 Retrieve Terms resource for a specific account (specified by its **accountId** property) which may be used with this vendor.
@@ -1148,8 +1176,8 @@ The Patch action is used to modify specific traits of a bank resource. These tra
     + verify: `no` (string, optional) - perform verification of bank
         + defaults: `yes`
 
-+ Request (application/json)
 
++ Request (application/json)
     + Body
 
             {
@@ -1177,7 +1205,10 @@ The Patch action is used to modify specific traits of a bank resource. These tra
             }
 
 ### Remove a Bank [DELETE]
-    + Response 205 (application/json)
+
++ Response 205 (application/json)
+
+    + Body    
 
 ## Plans [/api/payments/plans?payment_id={payment_id}&duration={duration}]
 A resource which returns a payment object plans according to given duration in days.
@@ -1349,38 +1380,6 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
             }
 
 
-# Group Appendix A: API Calls Parameters
-
-More details regarding the API calls parameters
-(i.e. which are mandatory and which are optional, the property's Type and meaning etc) can be found [here](https://docs.google.com/a/zazma.com/document/d/1rGATWr_EgbGg739Z39FAl0ubb2ODeVGdcaPE4Kn6Clk/edit?usp=sharing)
-
-# Group Appendix B: Vendor Workflow Diagram
-
-![Alt tag](https://s3.amazonaws.com/api-documents/preapprove-workflow.png "Vendor Workflow Diagram")
-
-# Group Appendix C: Testing Various Scenarios
-
-In order to test various scenarios you should use special customer Accounts - i.e. with specific **companyDetails.name** values.
-
-Following are the available scenarios and the associated required Company Names:
-
-| Scenario     | API Call          | Response | Special Account Name                                                                  | Additional info|
-|--------------|-------------------|----------|-----------------------------------------------------------------------------------------|----------------|
-| Credit Line Declined| Get Account Terms |  532     | any company name that contains the string **declined** (case insenative)  | -              |
-| Credit Line calculation In Process| Get Account Terms | 202 | any company name that contains the string **inprocess** (case insenative) | changed automatically to Approved (200) after 1 min|
-| Credit Line Approved| Get Account Terms |  200     | all other company names | -              |
-
-In order to test various scenarios you should use special Payment values - i.e. with specific **orderId** values.
-
-Following are the available scenarios and the associated required Payment details:
-
-| Scenario     | API Call          | Response | Special orderId Value                                                                 | Special description Value | Special amount Value
-|--------------|-------------------|----------|-----------------------------------------------------------------------------------------|----------------|--------|
-| Payment status SUBMITTED_DECLINED | Get Payment Status | 200 | any orderId value that contains the string **decline** (case insenative) | any description value that contians the string **autosubmit** | - |
-| Payment status CUSTOMER_SUBMITED_REVIEW | Get Payment Status | 200 | any orderId value that contains the string **review** (case insenative) | any description value that contians the string **autosubmit** | When the **amount** is lower than $10,000 the status will be changed automatically to APPROVED_PAYMENT_GENERATED after 2 min; Otherwise - it will stay in CUSTOMER_SUBMITED_REVIEW |
-| Payment status APPROVED_PAYMENT_GENERATED| Get Payment Status | 200 | any OrderId value that doesn't contain the string **decline** OR **inprogress** | any description value that contians the string **autosubmit** (case insenative) | - |
-| Payment status REFFERED_TO_CUSTOMER| Get Payment Status | 200 | any OrderId value including decline and review | description doesn't contian the string **autosubmit** (case insenative) | - |
-
 
 # Data structure
 
@@ -1442,11 +1441,11 @@ Following are the available scenarios and the associated required Payment detail
 + depositType: Defined account type (required, string)
 + nameOnAccount: Returned owner's name (required, string)
 + bankName: Identified bank name according to rtn (string)
-+ canACH: Indicates this bank account is capable of using ACH (boolean)
++ canACH: true (boolean)
 + primary: Indicates this bank is the account's primary bank (string)
 + status: Human readable bank account verification status (string)
 
 ## Agreements (object)
 + customerId: BHae12d442123 (string)
 + vendorId: BHae12d442123 (string)
-+ autoPay: Granted autoPay capability flag (boolean)
++ autoPay: false (boolean)
