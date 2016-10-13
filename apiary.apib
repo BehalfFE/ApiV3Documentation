@@ -3,46 +3,64 @@ FORMAT: 1A
 # Behalf API v3
 Behalf's API aims to expose all available functionality to an authenticated client.
 
-Using this API, a remote system can create new users, approve customers for loans and generate referred payments. In this reference you can find information about the actions Behalf exposes and the data resources the API returns as responses to these requests.
+Using this API, a remote system can create new Behalf customers, pre-approve them for loans and generate referred payments with Behalf.
 
-# Standard URL structure
-Behalf’s API uses the https scheme only. Requests in http will be completely ignored.
+In this reference you can find information about the actions Behalf exposes and the data resources the API returns as responses to these requests.
 
-Behalf API requests rely on REST verbs to perform actions or to retrieve information.
-Read actions are performed using the GET action and associated query part of the URL.
+# URL and REST Structure
+Behalf’s API uses the secured https scheme only. Requests in http will be completely ignored.
 
-    GET /v3/leads/<leadid>
+All calls are sent to the Behalf domain  "**api.behalf.com**" , and for convenience reasons the prefix  **https://api.behalf.com** is omitted in all URLs mentioned in this document.
+
+The Behalf API calls rely on REST verbs to perform actions or to retrieve information:
+
+Resource data is retrieved using the GET action and the associated query part of the URL.
+
+    GET /api/account/{accountId}/terms?vendor=me
 
 Resource creation is done using the POST action. Parameters are passed in the request body.
 
-    POST /v3/leads
-    {"email": <lead email>}
+    POST /api/account/
+    { "firstName": "firstname",
+      "lastName": "lastname",
+      "contact": {"email": "email"},
+      "companyDetails": {"name": "company name"},
+      "personalAddress": {"streetAddress": "street details","zipcode": "zip code"}
+    }
 
-Resource modification is done using the PUT action. Parameters are passed in the request body.
+Resource modification is done using the PUT action. Parameters are passed in the request body. Note that PUT requests will expect an ‘id’ value to be present in the body. This id name may change for different requests.
 
-    PUT /v3/leads/<leadid>
-    {"email": <lead email>}
+    PUT /api/payments/{paymentId}
+    {
+        "repaymentFrequency": "Net"
+    }
 
 Some resources’ properties can be modified directly. Note that some patch commands may refer to elements which are not actually properties.
 
-    PATCH /v3/leads/<leadid>
-    {"email": <lead email>}
+    PATCH /api/payments/{paymentid}
+    {
+        "status": "canceled"
+    }
 
 
-Resource removal is done using the DELETE action. Parameters are passed in the query part of the URL. Note that PUT requests will expect an ‘id’ value to be present in the body. This id name may change for different requests.
+Resource removal is done using the DELETE action. Parameters are passed in the query part of the URL.
 
-    DELETE /v3/leads/<leadid>
+    DELETE /api/banks/{bankId}
 
 # Required headers
-The Behalf API strictly requires several headers to be sent in order to perform authentication and identify legitimate requests.
+The Behalf API strictly requires several headers to be sent in order to perform authentication and identify legitimate requests. All requests must include the following headers:
 
 All requests must include the following headers:
 
-**X-Behalf-Email**: An email address representing the current user active on the API wire. This field is used to track and differentiate between users for audit purposes, when a single authentication credentials set is provided in an organisation. If this field is not provided, the request will fail with a 400 Bad Request error.
+**X-Behalf-Email**: An email address representing the current user active on the API wire.
+This field is used for audit purposes to track and differentiate between different "users"
+when a single authentication credentials set is provided for an organisation with multiple "users".
 
 **Accept**: The client should specify the desired response format. For now, only application/json is supported.
 
 **Content-Type**: *POST*, *PATCH* and *PUT* requests must also specify the body’s format as application/json
+
+**Authorization**: An authentication token used for authentication. This header's content indicates the current authenticated Client ID. More details in the authentication section
 
 # Request parameters
 Parameters used to pass information for requests are strictly defined for their contents. Requests to the API failing to provide legal values are rejected outright.
@@ -55,15 +73,16 @@ Standard response structure will include the following header:
     Content-Type: application/json
 
 ## Data Types
-The body will include a JSON encoded object of the resource requested.
+The response body will include a JSON encoded object of the resource requested.
 The JSON structure returned is limited to primitives (boolean, number, string) and compounds (array, objects, null).
 
 Dates and DateTime elements are explicitly expected to be formatted in ISO8601.
 
 DateTime elements accept a timezone in input but will always return a UTC formatted ISO8601 string.
 
-Paramters that accept 'me' as input, will also accept 'ME', 'Me', 'yo', 'ich', 'ge', 'mig' & 'meg'.
-The API will replace those symbols with the current client's ID.
+Paramters that accept 'me' as input, will also accept 'ME' and 'Me'.
+The API will replace those symbols with the current authenticated Client ID.
+
 
 
 ## Response Codes
@@ -73,7 +92,7 @@ Response codes indicate the way the requested action was handled:
 
 **201**: Created - standard response to a POST action which also indicates that resource creation is also completed
 
-**202**: Accepted - The action is queued and will be executed. The http status message will include the queue ID of the action. 
+**202**: Accepted - The action is queued and will be executed.
 
 Errors are indicated by http response code along with a corresponding human readable message. Additional details will be attached as a JSON encoded resource structure.
 
@@ -126,121 +145,51 @@ Standard errors are:
 
 Specific application errors are returned as 500 errors in the range 530 - 580
 
-## Hypermedia links
+## Hypermedia Links
 
-The Behalf API v3 supports Hypermedia links as part of its standard response structure. For more information about Hypermedia links: http://en.wikipedia.org/wiki/HATEOAS.
+The Behalf API supports Hypermedia Links as part of its standard response structure. For more information about Hypermedia Links: http://en.wikipedia.org/wiki/HATEOAS.
 
-For Behalf API consumers, the Hypermedia links that are provided indicate the next available steps for the current resource. Based on these links, a developer or an automated process can explore the API or get indications for the next steps in the current workflow.
-This next step is described as a hyperlink URL which represents a resource. This resource can be called using http verbs normally. Note that many of our actions respond only to specific verbs. An invalid method error (405) will be returned if a specific verb is unavailable.
+For a retrieved resource data (e.g. consumer), the Hypermedia Links that are provided indicate the next available steps for the current resource. Based on these links, a developer or an automated process can explore the API or get indications for the next steps in the current workflow.
+This next step is described as a hyperlink URL which represents a resource. This resource can be called using http verbs normally. Note that some actions respond only to specific verbs, where an "invalid method error" (405) will be returned if a specific verb is unavailable.
 
 You can always find out what verbs are available by using the OPTIONS http VERB on a resource.
 
-HAL Links structure example:
+Hypermedia Links structure example:
 
     "_links": {
         "self": {
-            "href": "https://behalf.com/api/account/account-id"
+            "href": "https://api.behalf.com/api/account/{accountId}"
         },
         "terms": {
-            "href": "https://behalf.com/api/account/account-id/terms"
+            "href": "https://api.behalf.com/api/account/{accountId}/terms"
         },
-        "customer-sales": {
-            "href": "https://behalf.com/api/customerSalesInfo/link-id"
+        "additionalData": {
+            "href": "https://api.behalf.com/api/additionalData/{linkId}"
         }
     }
 
 # Authentication
-The Behalf API v3 supports two kinds of authentication: Oauth2 and Signature based authentication.
+The Behalf API v3 supports OAuth2.0 authentication.
 
 ## Oauth2
 The Behalf API supports the Oauth2 grant type **client_credentials**
 
-### Obtaining id and secret
-A **client_id** and **client_secret** can be obtained through our Customer Support service. Only certified merchants and verified customers may obtain credentials for integration.
-
-Credentials are provided as requested and only a single pair for every single user.
-
-### Using credentials to obtain a token
-To obtain an Oauth token a request should be sent to
-    
-    POST /api/oauth
-    {
-        "grant_type": "client_credentials",
-        "client_id": <company_id>,
-        "client_secret": <client_secret>,
-    }
-
-which will return a response of
-    
-    {
-      "access_token": <access_token>,
-      "expires_in": 3600,
-      "token_type": "Bearer",
-      "scope": null
-    }
-    
-The **access_token** should be added to the Authorization header in all requests to the API.
-    
-    Authorization: Bearer <access_token>
-
-
-## X-Behalf-Signature
-The X-Behalf-Signature header contains a credentials identifier and a credentials signature. The identifier is a constant ID generated for the user. This ID is not secret. The signature, however, is a hash generated by the client for authentication.
-
-### Obtaining or revoking public and private keys
-
-Public and Private keys for communicating with Behalf can be obtained through our Customer Support service. Only certified merchants and verified customers may obtain keys for integration.
-
-Keys are provided as requested and only a single pair for every single user.
-
-### Using private keys for request signing
-The credentials signature is based on the URL path, the request body (empty string if none is present) and the query parameters.
-
-These strings are concatenated to each other in a particular order. The credentials' secret keys is used to sign the string we created.
-
-The process of creating the signature starts with serializing the request data into a string in a consistent manner:
-
-    <url path><request-body-json | empty string><un-formatted-request-query-parameters | empty string>
-
-The generated string is then fed into a sha256 hmac function, keyed by the secret key. The resulting hash is sent in the signature header.
-
-### Signature generation example
-**URL**: https://beta.behalf.com/api/v1/lead/my-lead-id
-
-With the key pair
-
-    public my-public-key
-    private my-private-key
-
-The string for hashing is:
-
-    "/api/v1/lead/my-lead-id"
-
-The private key for signing is “my-private-key”
-
-Run (in php online functions):
-
-    echo bin2hex(mhash( MHASH_SHA256, "/api/v1/lead/my-lead-id", "my-private-key"));
-
-OR
-
-    echo hmac_hash( 'sha256', "/api/v1/lead/my-lead-id", "my-private-key");
-
-The result is:
-
-    f8bd1e5925e00ed709d66e1ff6fd49949836977d124a21de3e19f887896fdd72
-
-The X-Behalf-Signature header is
-
-    X-Behalf-Signature: my-public-key;f8bd1e5925e00ed709d66e1ff6fd49949836977d124a21de3e19f887896fdd72
+### Obtaining Id and Secret
+A **client_id** and **client_secret** can be obtained through our Customer Support service.
+Only certified merchants and verified customers may obtain credentials for integration.
 
 # Versioning
-The Behalf API supports a soft versioning policy which provides for changes in behavior, input and output options. Soft versioning means that output and input may be modified as long as it keeps backwards compatibility by not modifying or removing existing elements. Behalf is allowed to add new optional parameters or new output elements without changing the version of the API.
+The Behalf API supports a soft versioning policy which provides for changes in behavior, input and output options. Soft versioning means that output and input may be modified as long as it keeps backwards compatibility by not modifying or removing existing elements. Behalf is allowed to add new **optional** parameters or **new** output elements without changing the version of the API.
 
-Any modification of input, output or behavior of an existing (and deployed) API must be done on a new version and allow for an essentially different API to replace the old one in the new version. Naturally, the old version must continue to work and keep to its previous behavior regardless of changes to any other version, higher or lower.
+Any modification of input, output or behavior of an **existing** (and deployed) API must be done on a new version and allow for an essentially different API to replace the old one in the new version. Naturally, the old version must continue to work and keep to its previous behavior regardless of changes to any other version, higher or lower.
 
-Version negotiation is done through the URL path. An unknown or unsupported version will be rejected outright. If no version is specified, the default version used is the latest available version of the api.
+Version negotiation is done through the URL path and is optional.
+If Version is not specified within the URL path then the latest API version will be used.
+An unknown or unsupported version will be rejected outright.
 
+The format of the Version within the URL path (when used) is:
+
+    /api/V3/{......}
 
 # Standard GET query parameters
 The following parameters and their specification are considered standard, optional parameters for any GET collection or entityt request. Note that in some contexts, these parameters will not make sense (such as limit on a GET single entity request).
@@ -250,62 +199,254 @@ A GET request may use the limit and page query parameters to perform basic pagin
 **limit** The limit parameter is the number of rows to be retrieved by any single page of the collection.
 **page** The page number to be retrieved. The first page is 1 and continues at single increments.
 
+# Vendor Basic Operations
+There are few basic operations commonly done by vendors, using the Behalf API:
 
-# Developing with the Behalf API
+- Create a New Behalf Customer
+- Add Behalf Customer Details
+- Edit Behalf Customer Email
+- Update Additional Data
+- Retrieve Behalf Terms for a Customer
+- Refer a New Payment to Behalf Customer
+- Update Details of a Referred Payment
+- Retrieve Payment Status
+- Cancel a Referred Payment
+
+## Create a New Behalf Customer
+In order to offer Behalf Terms to his customer, a vendor should first create a Behalf Account for that customer,
+including customer's **Personal** address.
+This is done by a single API call:
+- [Create an Account](#reference/accounts/account-resource/create-an-account)
+
+## Add Behalf Customer Details
+Customer's additionals details may be added later by the vendor, but only **before** the customer has signed-up to Behalf.
+This is done by a single API call:
+- [Add Account Details](#reference/accounts/account-resource/add-account-details)
+
+## Edit Behalf Customer Email
+Customer's email may be modified by the vendor, but only **before** the customer has signed-up to Behalf.
+This is done by a single API call:
+- [Edit Account Email](#reference/accounts/account-resource/edit-account-email)
+
+## Update Additional Data
+The vendor may provide some additional data he has regarding his Behalf customer.
+This extra data may lead to an increased Credit Line of the customer.
+
+This is done by a single API call:
+- [Update Additional Data](#reference/additional-data/additional-data-resource/update-additional-data)
+
+## Retrieve Behalf Terms for a Customer
+When the vendor's customer has a Behalf Account - the vendor can get the Terms which Behalf assigns to this customer (to be used with this vendor).
+The Terms include the customer's Credit-Line, Available Balance, Max Duration, Pricing and available Repayment-Plans.
+Customer's Terms may change along time, pending on Behalf's criteria and customer's performance.
+The customer's Terms are retrieved by a single API call:
+- [Get Account Terms](#reference/terms/account-terms-resource/get-account-details)
+
+**Note:** Calculation of customer's Terms, especially in the first time, may take in extreme cases up to a couple of minutes.
+In those cases the vendor will get a relevant response and should retry to retrieve the customer's Terms later (i.e. resend this request).
+
+## Refer a New Payment to Behalf Customer
+A vendor can refer a new Payment to a Behalf customer who has sufficient available Balance.
+This is done by a single API call:
+- [Create a New Payment](#reference/payments/payment-resource/)
+
+## Update Details of a Referred Payment
+A vendor can only update the orderId of a referred Payment.
+This is done by a single API call:
+- [Update Payment Details](#reference/payments/payment-resource/update-payment-details)
+
+## Retrieve Payment Status
+In order for a referred Payment to be Approved by Behalf - it should be accepted (submitted) by the customer, after selecting his preferred repayment plan.
+This may take some time as it depends on the customer's availability and response time.
+The vendor may, at any point of time, get the updated status of any of his Payments.
+This is done by a single API call:
+- [Retrieve Payment Status](#reference/payments/payment-resource/retrieve-payment-status)
+
+## Cancel a Referred Payment
+A vendor can cancel a referred Payment any time **before** the Payment is Approved by Behalf.
+This is done by a single API call:
+- [Update Payment Status](#reference/payments/payment-resource/update-payment-status)
+
+# Developer Environment (API Demo)
 
 ## Introduction
-Behalf provides a Demo or testing environment to use as an alternate gateway. Requests executed on this environment will behave in a manner similar to the production environment but will not actually charge or make any payouts. This makes the Demo environment a safe place to try out your integration and conduct initial integration tests.
+Behalf provides a Demo environment for the API - to be used by external developers.
+Requests executed on this environment will behave in a manner similar to the production environment but will not actually charge or make any payouts.
+This makes the Demo environment a safe place to try out your integration and conduct initial integration tests.
 
-Calling the Demo environment requires you use a different URL for connecting to the API: **http://demo.behalf.com/api**
+The Demo environment is designed so that it does not require real data for users, other than passing a syntax check.
+This means that some scenarios on the demo environment will behave a little differently than production.
 
-The Demo environment is designed so that it does not require real data for users, other than passing a syntax check. This means that some scenarios on the demo environment will behave a little differently than production.
 For example:
-    **Check Qualification** - Will always approve the customer.
-    **Submit payments** - Will always submit the payment regardless of other considerations.
-    **Banks** - Will always approve the bank, regardless of its details.
+    **Create New Account** - Will always create an account with available Credit Line regardless of account details.
 
 ## Authentication
-The authentication in the Demo environment is same like in the normal environment (Prod.). 
+The authentication in the Demo environment is the same as in the normal environment,
+however different credentials will be provided (by Behalf).
 
 ## How To Use
-The use with DEMO environment API call is same like the regular API call, all the API calls works in the Demo environment.
-To working with Demo environment API call need to chenge the Demo environment 
-**URL: https://demo.behalf.com/api**
+All API calls work in the Demo environment, where the only change is the base URL:
 
-* The HEDERS is same like in the regular environment.
+**https://api.demo.behalf.com/**
 
-Example API (account) call URL: 
-**https://demo.behalf.com/api/account**
 
 
 # Group Workflow
-## Token Resource [/api/tokens]
-A token represents a user tracked action that is expected to lead to a particular system workflow, such as sign up or other conversion of state.
 
-### Create a new token [POST]
-Create a new token and start its associated workflow
+## Token Resource [/api/token]
+A token represents a user tracked action that is expected to lead to a particular system workflow, such as invite or other conversion of state.
+
+### Create a new invite customer token [POST]
+This action creates a new token and start its associated workflow.
+The token creation will trigger an invite email that will be sent to the customer. That link in the
+email includes this token.
+This token should be used in 2 main scenarios:
+
+1. To invite a customer who doesn’t have a payment to complete the qualification process.
+2. To invite customers, who their "Get Account Terms" call ended with 531 response: "Account is missing properties: ssn",
+to provide this information as part of the qualification process.
+
 + Request (application/json)
 
     + Body
-    
+
             {
-                "type": "signup"
-                "email": "new-user@behalf.com"
+                "type": "invite"
+                "accountId": "account-id"
             }
-            
+
 + Response 201 (application/json)
 
     + Body
 
             {
                 "token": "BEa094e92215",
-                "type": "signup"
+                "accountId": "account-id"
             }
-            
             
 # Group Members
 ## Account Resource [/api/account/]
 Account resource describing a single set of credentials and associated Company. This resource is available to authenticated users for posting.
+
+
+### Create an Account [POST]
+This action creates a new Account resource or adds **missing** information to an **existing** one.
+It cannot be used to override/replace **existing** information.
+Additionally, this action creates a link between the currently authenticated user (vendor) and the created account (customer).
+
+**Note:** Although some of the proprties are optional, it is recommended to provide as much data as possible upon account creation.
+
+This POST can get two affirmative responses : 200 or 201
+
+**The 201 response** indicates the resource was created successfully and the requesting user is linked to the newly created account.
+
+**The 200 response** indicates the resource already existed and the requesting user is now linked to that account.
+
+In either case, the same resource is returned.
+
+**Note:** An existing resource will be updated with new information **only** if that information is **missing** from the resource.
+An existing property will **not** be overridden by a POST (i.e. "conflicting" provided properties are ignored).
+
+
++ Request Mandatory parameters only (application/json)
+
+    + Body
+
+            {
+                "firstName": "firstname",
+                "lastName":  "lastname",
+                "contact": {"email":"email"},
+                "companyDetails": {"name": "company name"},
+                "personalAddress": {"streetAddress": "street details (w/o city,state)","zipcode": "zip code"}
+            }
+
+
++ Request All available parameters (application/json)
+
+    + Attributes (Account Full)
+
++ Response 200 (application/json)
+
+    + Attributes (Account)
+
++ Response 201 (application/json)
+
+    + Attributes (Account)
+
+### Add Account Details [POST /api/account/]
+Add additional details of an account (only **missing** properties of the resource which were not provided before).
+
+**Note:** This action can be performed by a vendor only on **his** customers' accounts,
+and only **before** an account has passed the signup process.
+After signup, a vendor can not make any changes to a customer's account.
+
++ Request All available parameters (application/json)
+
+    + Attributes (Account Full)
+
++ Response 200 (application/json)
+
+    + Attributes (Account)
+
+## Account Personal Address [/api/account/{accountId}/personalAddress]
+An account's personal address sub-resource. This resource contains location and contact details of the account's owner
++ Parameters
+    + accountId (required, string, `BHae12d442123`, `me`) ... Unique identifier of the /account resource
+
+### Update Personal Address [PUT]
+
++ Request (application/json)
+    
+    + Body
+    
+            {
+                "streetAddress": "123rd 9th East st.",
+                "zipCode": "44321",
+                "apt_unit": "12c",
+                "phone": "9718332561"
+            }
+            
++ Response 200 (application/json)
+    
+    + Body
+    
+            {
+                "accountId": "BHae12d442123",
+                "streetAddress": "123rd 9th East st.",
+                "zipCode": "44321",
+                "apt_unit": "12c",
+                "phone": "9718332561"
+            }
+
+## Account Business Address [/api/account/{accountId}/businessAddress]
+An account's business address sub-resource. This resource contains location and contact details of the account's business or company
++ Parameters
+    + accountId (required, string, `BHae12d442123`, `me`) ... Unique identifier of the /account resource
+
+### Update Business Address [PUT]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "streetAddress": "123rd 9th East st.",
+                "zipCode": "44321",
+                "apt_unit": "12c",
+                "phone": "9718332561"
+            }
+            
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "accountId": "BHae12d442123",
+                "streetAddress": "123rd 9th East st.",
+                "zipCode": "44321",
+                "apt_unit": "12c",
+                "phone": "9718332561"
+            }
 
 ### Update Account details [PUT /api/account/{accountId}]
 Update the details of an account. This action can only be performed on the authenticated user himself or by a linked vendor before the account has passed the signup process. After signup, a vendor may not make changes to a customer's account.
@@ -313,8 +454,60 @@ Update the details of an account. This action can only be performed on the authe
     + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account resource
 
 + Response 200 (application/json)
-    
+
     + Attributes (Account)
+
+Your customer’s email address can be edited at any point prior to sign-up.
+
+Unlike the account details, which cannot be updated after they are submitted,
+you can edit your customer’s email address anytime prior to sign-up.
+
+**Note:** The **accountId** parameter is the value that is returned as part of the **Create an Account** operation.
+(the **links.self** in the response). This action can be performed by a vendor only on his customers' accounts.
+
++ Parameters
+    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account
+
+Your customer’s email address can be edited at any point prior to sign-up.
+
+Unlike the account details, which cannot be updated after they are submitted,
+you can edit your customer’s email address anytime prior to sign-up.
+
++ Request (application/json)
+
+    + Body
+            {
+                "contact":{
+                    "email":"email"
+                }
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "accountId": "account-id",
+                "firstName": "firstname",
+                "lastName": "lastname",
+                "contact":{
+                    "contactId": "contact-id", "email":"email"
+                },
+                "companyDetails": {
+                    "name": "company name",
+                },
+                "_links": {
+                    "self": {
+                        "href": "https://api.behalf.com/api/account/{account-id}"
+                    },
+                    "terms": {
+                        "href": "https://api.behalf.com/api/account/{account-id}/terms"
+                    },
+                   "additionalData": {
+                        "href": "https://api.behalf.com/api/additionalData/{additionalData-id}"
+                    }
+                }
+            }
 
 ### Retrieve a collection of accounts [GET /api/account{?query}]
 
@@ -363,120 +556,29 @@ This action retrieves a list of account elements linked to the authenticated use
                 "total_items": 1
             }
 
-### Create or Add data to an Account [POST]
-This action creates a new Account resource or adds missing information to an existing one. It cannot be used to override existing information.
-Additionally, this action creates a link between the currently authenticated user and the account.
-A POST to /account can get two affirmative responses - 200 or 201.
+## Account Terms Resource [/api/account/{accountId}/terms?vendor=me]
+This is an Account sub-resource that describes the account's available Behalf Terms.
 
-The accountBalance property depends on the completion of the qualification step or terms retrieval for the account. Otherwise, this parameter may be 0.
-
-**The 201 response** indicates the resource was created successfully and the requesting user is linked to the newly created account.
-
-**The 200 response** indicates the resource already existed and the requesting user is now linked to the account.
-
-In either case, the same resource is returned. An existing resource will be updated with new information only if that information is missing from the resource. An existing property will not be overridden by a POST.
-+ Request Mandatory parameters only (application/json)
-
-    + Body
-
-            {
-                "firstName": "firstname",
-                "lastName":  "lastname",
-                "contact": {"email":"email"},
-                "companyDetails": {"name": "company name"}
-            }
-    
-
-+ Response 200 (application/json)
-    
-    + Attributes (Account)
-
-+ Response 201 (application/json)
-    
-    + Attributes (Account)
-
-+ Request All available parameters (application/json)
-    
-    + Attributes (Account Full)
-
-+ Response 200 (application/json)
-    
-    + Attributes (Account)
-
-## Account Personal Address [/api/account/{accountId}/personalAddress]
-An account's personal address sub-resource. This resource contains location and contact details of the account's owner
+**Note**: The vendor can use this resource only for **his** customers.
 + Parameters
-    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account resource
+    + accountId (required, string, `BHae12d442123`, `me`) ... Unique identifier of the /account resource
 
-### Update Personal Address [PUT]
+### Get Account Terms [GET]
+Retrieve Terms resource for a specific account (specified by its **accountId** property) which may be used with this vendor.
+The response includes the customer's Behalf terms available to be used with this vendor, such as credit-line, available balance, pricing etc.
 
-+ Request (application/json)
-    
-    + Body
-    
-            {
-                "streetAddress": "123rd 9th East st.",
-                "zipCode": "44321",
-                "apt_unit": "12c",
-                "phone": "9718332561"
-            }
-            
-+ Response 200 (application/json)
-    
-    + Body
-    
-            {
-                "accountId": "BHae12d442123",
-                "streetAddress": "123rd 9th East st.",
-                "zipCode": "44321",
-                "apt_unit": "12c",
-                "phone": "9718332561"
-            }
+This action may cause Terms to be recalcualted for that account.
 
-## Account Business Address [/api/account/{accountId}/businessAddress]
-An account's business address sub-resource. This resource contains location and contact details of the account's business or company
-+ Parameters
-    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account resource
+Note that in some cases the Terms calculation may take up to a couple of minutes.
+In those cases the Response will have Code **202** - "Request is In Process" - and the Terms properties will not be set.
+The user (vendor) will have to post this request again in a later time (e.g. within 2-3 minutes) in order to get the Terms details.
 
-### Update Business Address [PUT]
-
-+ Request (application/json)
-
-    + Body
-
-            {
-                "streetAddress": "123rd 9th East st.",
-                "zipCode": "44321",
-                "apt_unit": "12c",
-                "phone": "9718332561"
-            }
-            
-+ Response 200 (application/json)
-
-    + Body
-
-            {
-                "accountId": "BHae12d442123",
-                "streetAddress": "123rd 9th East st.",
-                "zipCode": "44321",
-                "apt_unit": "12c",
-                "phone": "9718332561"
-            }
-
-## Account Terms [/api/account/{accountId}/terms]
-Account subresource that describes the account's available terms. This resource is only available to authenticated linked users or to the owner of the account.
-+ Parameters
-    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account resource. Value of _me_ uses the current client as the vendor.
-
-### Retrieve Account Terms [GET]
-Retrieve a terms resource for the requested account.
-
-**Note**: This action may cause terms to be recalcualted for the account.
+In case the customer is not entitled for Behalf Terms - the Response will inclusde Code **532**.
 
 + Response 200 (application/json)
 
         {
-            "accountId": "BHae12d442123",
+            "accountId": "account-id",
             "line": 5000,
             "balance": 4500,
             "maxRepayment": 60,
@@ -484,124 +586,128 @@ Retrieve a terms resource for the requested account.
             "grace": null,
             "minAmount": 300,
             "maxAmount": 5000,
-            "repaymentsFrequency": "Monthly|Daily"
+            "repaymentFrequencies": "Weekly;Monthly",
+            "allowExpressBankFlow": false,
+            "hasBalance": true,
+            "_links": {
+                "self": {
+                    "href": "https://api.behalf.com/api/account/{account-id}/terms"
+                }
+            }
         }
 
 + Response 202 (application/json)
 
-    While the terms calculation is in process, we will retrieve current, or empty terms.
-
-            Retry-After: 30
+    Request is In Process, try again within few minutes.
 
     + Body
 
             {
-                "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
-                "title": "Accepted",
-                "status": 202,
-                "detail": "Terms calculation is in process, please retry in 30 secs"
+                "accountId": "account-id",
+                "line": 0,
+                "balance": 0,
+                "maxRepayment": 0,
+                "feePer1K": 0,
+                "grace": null,
+                "minAmount": 0,
+                "maxAmount": 0,
+                "repaymentFrequencies": ""
+                "allowExpressBankFlow": false,
+                "hasBalance": false,
+                "_links": {
+                    "self": {
+                        "href": "https://api.behalf.com/api/account/{account-id}/terms"
+                    }
+                }
             }
-          
-          
+
 + Response 403 (application/json)
-    
-    Access to the account's terms is forbidden because no link exists between the currently authenticated vendor and the customer.
+
+    Access to the account's Terms is forbidden because no link exists between the currently authenticated vendor and the customer.
     Note that in some cases, an 403 is returned when the requested Account ID does not exist, instead of the expected 404.
 
     + Body
-    
+
             {
                 "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
                 "title": "Forbidden",
                 "status": 403,
                 "detail": "Access to account terms is forbidden"
-            }      
+            }
+
 + Response 531 (application/json)
-    
-    "Account is missing properties" followed by a list of missing properties. This list details those /account resource properties which have no value and must be entered to retrieve Terms.
-    
-    Entering new values into /account properties is done by POST to /account with the terms accountId.
+
+    Account is missing properties, followed by a list of the missing properties.
+    This list details those /account resource properties which have no value and must be entered to retrieve Terms.
+
+    Entering the missing values into /account properties is done by POST to the /account with the relevant accountId.
 
     + Body
-    
+
             {
                 "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
                 "title": "Bad Request",
                 "status": 531,
                 "detail": "Account is missing properties: ssn"
             }
-            
+
 + Response 532 (application/json)
-    
-    Account Credit Line was declined. This account currently has no creditline available from Behalf and cannot create payments.
-    
+
+    Account Credit Line was declined. This account currently has
+    no creditline available from Behalf and cannot create payments.
     Note that this state is not permanent and may change in future GET terms checks.
-    
+
+
     + Body
-    
+
             {
                 "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
-                "title": "Credit Line Delined",
+                "title": "Credit Line Declined",
                 "status": 532,
                 "detail": "The account was declined a credit line"
             }
 
-+ Response 400 (application/json)
-    
-    To be able and approve terms, additional data is required to be provided.
-    
++ Response 533 (application/json)
+
+    Account is missing some Additional Data.
+    Entering the missing data is done by PUT to the /AdditionalData resource with the relevant linkId.
+
     + Body
-    
+
             {
                 "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
                 "title": "Bad request",
-                "status": 400,
+                "status": 533,
                 "detail": "Additional data is required"
             }
 
-### Retrieve Transaction Terms [GET /api/account/{accountId}/terms{?vendor}]
-If the **vendor** parameter is specified, the terms are provided for an expected transaction between the customer's account and the specified vendor.
+## Additional Data [/api/additionalData/{additionalDataId}]
+The Additional Data resource is used to represent more information that the vendor has about the customer.
 
-Error responses and the **In Process** scenario remain the same.
-
-**Note**: This action may cause terms to be recalcualted for the account.
+**Note:** The **additionalDataId** parameter is the value that is returned as part of the **Create New Behalf Customer** operation.
+(the **links.additionalData** in the response).
 
 + Parameters
-    + accountId (required, string, `BHae12d442123`) ... Unique identifier of the /account resource. Value of _me_ uses the current client as the vendor.
-    + vendor (optional, string, `BHae12d442123`) ... Unique identifier of the vendor to cross terms with. Can also accept 'me' value.
+    + additionalDataId (required, string, `BHae12d442123`) ... Unique identifier of the /additionalData
 
-+ Response 200 (application/json)
+### Update Additional Data [PUT /api/additionalData/{additionalDataId}]
+The request body is flexibile and may include any data fields that the vendor has about that customer.
 
-        {
-            "accountId": "BHae12d442123",
-            "line": 5000,
-            "balance": 4500,
-            "maxRepayment": 60,
-            "feePer1K": 20,
-            "grace": null,
-            "minAmount": 300,
-            "maxAmount": 5000,
-            "repaymentsFrequency": "Monthly|Daily"
-        }
+**Note:** Updated data will **overwrite** any data previously provided using this API call.
 
-## Additional data [/api/additional-data/{link_id}]
-Additional Data resource is additional data used to represent additional data provided by a vendor.
-
-### Update a additional data [PUT /api/additional-data/{link_id}]
-Update additional data will overwrite any existing data.
-A flexibile array of data on the customer, provided by the vendor. Data will be saved as a document.
 
 + Request (application/json)
 
-    The request & response bodies are flexibile and non conclusive. The following is only an example of possible data passed to this resource.
+    The request & response bodies are flexibile and non conclusive.
+    The following is **only an example** of possible data passed to this resource,
+    where the vendor may provide more data fields he has.
 
     + Body
-    
+
             {
-                "duns": "804735132",
-                "industry": "finanace",
-                "employes": 120,
-                "businesType": "partnership",
+                "industry": "finance",
+                "employees": 120,
+                "businessType": "partnership",
                 "YearOfIncorporation": 2012
             }
 
@@ -610,13 +716,18 @@ A flexibile array of data on the customer, provided by the vendor. Data will be 
     + Body
 
             {
-                "BehalfID": "a08J000000Dgcb6IAB",
-                "duns": "804735132",
-                "industry": "finanace",
-                "employes": 120,
-                "businesType": "partnership",
+                "additionalDataId": "additionalData-id",
+                "industry": "finance",
+                "employees": 120,
+                "businessType": "partnership",
                 "yearOfIncorporation": 2012
+                "_links": {
+                    "self": {
+                        "href": "https://api.behalf.com/api/additionalData/{additionalData-id}"
+                    }
+                }
             }
+
 
 ## Agreements [/api/agreements/{accountId}]
 
@@ -630,9 +741,9 @@ This operational structure is described in http://williamdurand.fr/2014/02/14/pl
 Note the use of an array for the entity body. This is done to allows stacking of operation commands.
 
 + Request Enroll to AutoPay service (application/Json)
-    
+
     + Body
-    
+
             [
                 {
                     "path": "/autoPay",
@@ -642,32 +753,28 @@ Note the use of an array for the entity body. This is done to allows stacking of
             ]
 
 + Response 200 (application/json)
-    
+
     + Attributes (Agreements)
     + Attributes
         + autoPay: true (boolean)
 
-# Group Pay
+# Group Payments
 All action URLs are assumed to have the /api prefix. This path directory is omitted from the examples and resource names for brevity.
 
-## Payments [/api/payments/{paymentId}]
+## Payments [/api/payments/]
 A resource that describes a transaction between a customer and a vendor.
-A Payment object shows meta information about the payment and its current state. This object is used as the basis for repayment plans and enforcing the lifecycle of a transaction.
+A Payment object shows meta information about the payment and its current state.
+This object is used as the basis for repayment plans and enforcing the lifecycle of a transaction.
+
 
 **Note**: Vendors and Customers within the system will retrieve a slightly different set of properties in the payments object. Check request examples for details.
-
-+ Parameters
-
-    + paymentId (required, string, `BHae12d442123`) ... Unique identifier of the /payments resource
 
 ### Retrieve a Payment [GET /api/payments/{paymentId}]
 
 Retrieve a payment entity according to it's payment Id.
 Payment entities include all the relevant information held by Behalf for a particular payment. This includes a link to the terms and conditions signed by the customer.
 
-+ Request Customer Request (application/json)
-
-+ Response 200 (application/json)
++ Response 200 (applicatio/json)
 
     + Body
 
@@ -703,63 +810,29 @@ Payment entities include all the relevant information held by Behalf for a parti
                 }
             }
 
+### Create a New Payment [POST /api/payments/{?paymentId}?submit=no]
 
-+ Request Vendor Request (application/json)
+Create a new Payment entity with basic information.
+Both supplierCompanyId and customerCompanyId properties must be specified explicitly.
 
+**Note1**: The vendor can create this resource only for **his** customers
+(i.e. A vendor may only specify his own company-id in the **supplierCompanyId** property).
 
+**Note2**: There is an optional parameter in the query string - **origin** , to be used when it's a **renewal**
+of a previously approved Payment (e.g. from last year),
+where in that case its value should be set to the **paymentId** property of the original Payment (i.e. that from last year).
 
-+ Response 200 (applicatio/json)
+**Note3**: There is an **optional** parameter in the query string - **submit** , which accepts the values **no|yes|try**.
+Passing **yes** will
+force an attempt to submit the payment, if it cannot be submitted the payment will not be created and an error will be returned. If **try** is
+passed the payment will be created and submitted only if possible.
+The default value is **no**, which will create a regular referred payment which is not submitted.
 
-    + Body
+The Response includes a **paymentId** property which will be used in any future requests regarding this Payment.
+Note that creating a Payment sends an email to the customer inviting him to confirm and submit the Payment
+(unless it's a **renewal** of a previously approved Payment or a new payment which is **submitted** immediately, where in these cases the customer will get an email notification that a Payment was created and submitted).
 
-            {
-                "paymentId": "006J000000HwiPGIAZ",
-                "supplierCompanyId": "001J0000011DTrDIAW",
-                "customerCompanyId": "001J000001YxXxwIAF",
-                "supplierCompany": {
-                    "name": "Behalf Vendor"
-                },
-                "amount": 345,
-                "status": "DRAFT",
-                "termsAndConditions": false,
-                "orderId": null,
-                "messageToBuyer": null,
-                "messageToSeller": null,
-                "referred": false,
-                "submissionDate": "2015-02-22",
-                "initialDate": "2015-02-22",
-                "payDate": null,
-                "payoutMethod": "Virtual Card",
-                "_links": {
-                    "self": {
-                        "href": "https://www.behalf.com/api/payments/006J000000HwiPGIAZ"
-                    },
-                    "tnc": {
-                        "href": "http://www.behalf.com/termsAndConditions"
-                    }
-                }
-            }
-
-+ Response 404 (application/json)
-    
-    + Body
-    
-            {
-                "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
-                "title": "Not found",
-                "status": 404,
-                "detail": "Payment does not exist"
-            }
-
-### Create a new payment [POST]
-
-Create a payment entity with basic information. Note that creating a transaction does not submit it.
-Both supplierCompanyId and customerCompanyId must be specified explicitly.
-
-
-A vendor may only specify his own company-id in supplierCompanyId
-
-+ Request (application/json)
++ Request Normal Payment (application/json)
 
     + Body
 
@@ -767,10 +840,23 @@ A vendor may only specify his own company-id in supplierCompanyId
                 "supplierCompanyId": "001J0000011DTrDIAW",
                 "customerCompanyId": "001J000001YxXxwIAF",
                 "amount": 345,
-                "orderId": "My-order-id",
-                "description": null,
-                "messageToBuyer": null,
-                "messageToSeller": null
+                "orderId": "976-ab-12",
+                "description": "5 laptops",
+                "messageToBuyer": "hello"
+            }
+
++ Request Recurring/Renewal Payment (application/json)
+
+    + Body
+
+            {
+                "supplierCompanyId": "001J0000011DTrDIAW",
+                "customerCompanyId": "001J000001YxXxwIAF",
+                "amount": 345,
+                "orderId": "976-ab-12",
+                "description": "5 laptops",
+                "messageToBuyer": "hello",
+                "recurring": true
             }
 
 + Response 201 (applicatio/json)
@@ -784,25 +870,27 @@ A vendor may only specify his own company-id in supplierCompanyId
                 "supplierCompany": {
                     "name": "Behalf Vendor"
                 },
-                "customerBankId": "a06J000000Bqqn4IAB",
+                "customerCompany": {
+                    "name": "Behalf Customer"
+                },
                 "amount": 345,
-                "status": "DRAFT",
+                "status": "REFERRED_TO_CUSTOMER",
                 "termsAndConditions": false,
                 "termsAndConditionsUrl": null,
-                "orderId": "My-order-id",
-                "messageToBuyer": null,
+                "orderId": "976-ab-12",
+                "description": "description text",
+                "messageToBuyer": "hello",
                 "messageToSeller": null,
-                "referred": false,
+                "referred": true,
                 "submissionDate": null,
                 "initialDate": "2015-02-22",
                 "payDate": null,
-                "payoutMethod": "Virtual Card",
-                "totalToCollect": 357,
-                "outstandingAmount": 357,
-                "numSetteledRepayments": 0,
+                "submitFailureReason": null,
+                "recurring": false,
+                "autoPay": false,
                 "_links": {
                     "self": {
-                        "href": "https://www.behalf.com/api/payments/006J000000HwiPGIAZ"
+                        "href": "https://api.behalf.com/api/payments/006J000000HwiPGIAZ"
                     }
                 }
             }
@@ -863,7 +951,6 @@ A vendor may only specify his own company-id in supplierCompanyId
                             "amount": 345,
                             "status": "DRAFT",
                             "termsAndConditions": false,
-                            "termsAndConditionsUrl": null,
                             "orderId": null,
                             "messageToBuyer": null,
                             "messageToSeller": null,
@@ -906,33 +993,36 @@ accepets 'canceled' or 'confirm'
                 "supplierCompany": {
                     "name": "Behalf Vendor"
                 },
-                "customerBankId": "a06J000000Bqqn4IAB",
                 "amount": 345,
-                "status": "DRAFT",
+                "status": "REFERRED_TO_CUSTOMERT",
                 "termsAndConditions": false,
                 "termsAndConditionsUrl": null,
-                "orderId": null,
-                "messageToBuyer": null,
+                "orderId": "976-ab-13",
+                "messageToBuyer": "hello",
                 "messageToSeller": null,
-                "referred": false,
-                "submissionDate": "2015-02-22",
+                "referred": true,
+                "submissionDate": null,
                 "initialDate": "2015-02-22",
                 "payDate": null,
-                "payoutMethod": "Virtual Card",
-                "totalToCollect": 357,
-                "outstandingAmount": 357,
-                "numSetteledRepayments": 0,
-                "_links": {}
+                "recurring": false,
+                "vcExpirationDate": "1019"
+                "_links": {
+                    "self": {
+                        "href": "https://api.behalf.com/api/payments/006J000000HwiPGIAZ"
+                    },
+                    "tnc": {"href": "http://www.behalf.com/termsAndConditions?ver=0b3414a585e622869199c9f5892c7b48"}
+                }
             }
+
 
 + Request (application/json)
 
     + Body
-    
+
             {
                 "status": "confirm"
             }
-                
+
 + Response 200 (application/json)
 
     + Body
@@ -965,73 +1055,57 @@ accepets 'canceled' or 'confirm'
                 }
             }
 
-### Update Payment details [PUT /api/payments/{paymentId}]
-Update payment details allowing an update of certain fields within an existing payment,
-coorsponding to the user role.
+### Update Payment Details [PUT /api/payments/{paymentId}]
 
-Customers may only update the following fields: "repaymentFrequency"
-Vendors may only update the following fields: "orderId","messageToBuyer","description"
+Update the details of a previously referred Payment.
+The detail that can be updated are only the **orderId**, **description** or **messageToBuyer**.
+
+**Note:** This action can be performed by a vendor only on **his** Payments.
++ Parameters
+    + paymentId (required, string, `BHae12d442123`) ... Unique identifier of the /payment resource
 
 + Request (application/json)
 
     + Body
 
             {
-                "paymentId": "006J000000HwiPGIAZ",
-                "repaymentFrequency": "Net",
-                "supplierCompanyId": "001J0000011DTrDIAW",
-                "customerCompanyId": "001J000001YxXxwIAF",
-                "supplierCompany": {
-                    "name": "Behalf Vendor"
-                },
-                "customerBankId": "a06J000000Bqqn4IAB",
-                "amount": 345,
-                "status": "DRAFT",
-                "termsAndConditions": false,
-                "termsAndConditionsUrl": null,
-                "orderId": null,
-                "messageToBuyer": null,
-                "messageToSeller": null,
-                "referred": false,
-                "submissionDate": "2015-02-22",
-                "initialDate": "2015-02-22",
-                "payDate": null,
-                "payoutMethod": "Virtual Card",
-                "totalToCollect": 357,
-                "outstandingAmount": 357,
-                "numSetteledRepayments": 0,
-                "_links": {}
+                "orderId": "976-ab-13",
+                "description": "5 laptops",
+                "messageToBuyer": "hello",
             }
 
-+ Response 200 (application/json)
-    
++ Response 200 (applicatio/json)
+
     + Body
-    
+
             {
                 "paymentId": "006J000000HwiPGIAZ",
-                "repaymentFrequency": "Net",
                 "supplierCompanyId": "001J0000011DTrDIAW",
                 "customerCompanyId": "001J000001YxXxwIAF",
                 "supplierCompany": {
                     "name": "Behalf Vendor"
                 },
-                "customerBankId": "a06J000000Bqqn4IAB",
                 "amount": 345,
-                "status": "DRAFT",
+                "status": "REFERRED_TO_CUSTOMERT",
                 "termsAndConditions": false,
                 "termsAndConditionsUrl": null,
-                "orderId": null,
-                "messageToBuyer": null,
+                "orderId": "976-ab-13",
+                "messageToBuyer": "hello",
                 "messageToSeller": null,
-                "referred": false,
-                "submissionDate": "2015-02-22",
+                "referred": true,
+                "submissionDate": null,
                 "initialDate": "2015-02-22",
                 "payDate": null,
-                "payoutMethod": "Virtual Card",
-                "totalToCollect": 357,
-                "outstandingAmount": 357,
-                "numSetteledRepayments": 0,
-                "_links": {}
+                "recurring": false,
+                "vcExpirationDate": "1019"
+                "_links": {
+                    "self": {
+                        "href": "https://api.behalf.com/api/payments/006J000000HwiPGIAZ"
+                    },
+                    "tnc": {
+                        "href": "http://api.behalf.com/termsAndConditions"
+                    }
+                }
             }
 
 ## Bank [/api/banks/{bankid}]
@@ -1073,11 +1147,11 @@ The Patch action is used to modify specific traits of a bank resource. These tra
 + Parameters
     + verify: `no` (string, optional) - perform verification of bank
         + defaults: `yes`
-    
+
 + Request (application/json)
 
     + Body
-    
+
             {
                 "primary": true
             }
@@ -1103,7 +1177,7 @@ The Patch action is used to modify specific traits of a bank resource. These tra
             }
 
 ### Remove a Bank [DELETE]
-+ Response 205 (application/json)
+    + Response 205 (application/json)
 
 ## Plans [/api/payments/plans?payment_id={payment_id}&duration={duration}]
 A resource which returns a payment object plans according to given duration in days.
@@ -1183,6 +1257,8 @@ A resource which returns a payment object plans according to given duration in d
                 "detail": "Payment is not in status draft"
             }
 
+
+
 # Group Search
 
 ## Search [/api/search]
@@ -1198,7 +1274,7 @@ A resource which returns a payment object plans according to given duration in d
 + Response 200 (application/json)
 
     + Body
-    
+
             {
 
                 "id": "001J000001ZUYYkIAP",
@@ -1213,11 +1289,11 @@ A resource which returns a payment object plans according to given duration in d
                     }
                 }
             }
-            
+
 + Response 422 (application/json)
 
     + Body
-    
+
             {
               "email": [
                 "The email address that you provided belongs to an account that is no longer active. Please provide a different email address."
@@ -1227,11 +1303,11 @@ A resource which returns a payment object plans according to given duration in d
               "status": 422,
               "detail": "Account is no longer active"
             }
-            
+
 + Response 404 (application/json)
 
     + Body
-    
+
             {
                 "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
                 "title": "Not Found",
@@ -1271,6 +1347,40 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
                         "href": "https://local.behalf.com/api/search/Valentina/suggestions"
                 }
             }
+
+
+# Group Appendix A: API Calls Parameters
+
+More details regarding the API calls parameters
+(i.e. which are mandatory and which are optional, the property's Type and meaning etc) can be found [here](https://docs.google.com/a/zazma.com/document/d/1rGATWr_EgbGg739Z39FAl0ubb2ODeVGdcaPE4Kn6Clk/edit?usp=sharing)
+
+# Group Appendix B: Vendor Workflow Diagram
+
+![Alt tag](https://s3.amazonaws.com/api-documents/preapprove-workflow.png "Vendor Workflow Diagram")
+
+# Group Appendix C: Testing Various Scenarios
+
+In order to test various scenarios you should use special customer Accounts - i.e. with specific **companyDetails.name** values.
+
+Following are the available scenarios and the associated required Company Names:
+
+| Scenario     | API Call          | Response | Special Account Name                                                                  | Additional info|
+|--------------|-------------------|----------|-----------------------------------------------------------------------------------------|----------------|
+| Credit Line Declined| Get Account Terms |  532     | any company name that contains the string **declined** (case insenative)  | -              |
+| Credit Line calculation In Process| Get Account Terms | 202 | any company name that contains the string **inprocess** (case insenative) | changed automatically to Approved (200) after 1 min|
+| Credit Line Approved| Get Account Terms |  200     | all other company names | -              |
+
+In order to test various scenarios you should use special Payment values - i.e. with specific **orderId** values.
+
+Following are the available scenarios and the associated required Payment details:
+
+| Scenario     | API Call          | Response | Special orderId Value                                                                 | Special description Value | Special amount Value
+|--------------|-------------------|----------|-----------------------------------------------------------------------------------------|----------------|--------|
+| Payment status SUBMITTED_DECLINED | Get Payment Status | 200 | any orderId value that contains the string **decline** (case insenative) | any description value that contians the string **autosubmit** | - |
+| Payment status CUSTOMER_SUBMITED_REVIEW | Get Payment Status | 200 | any orderId value that contains the string **review** (case insenative) | any description value that contians the string **autosubmit** | When the **amount** is lower than $10,000 the status will be changed automatically to APPROVED_PAYMENT_GENERATED after 2 min; Otherwise - it will stay in CUSTOMER_SUBMITED_REVIEW |
+| Payment status APPROVED_PAYMENT_GENERATED| Get Payment Status | 200 | any OrderId value that doesn't contain the string **decline** OR **inprogress** | any description value that contians the string **autosubmit** (case insenative) | - |
+| Payment status REFFERED_TO_CUSTOMER| Get Payment Status | 200 | any OrderId value including decline and review | description doesn't contian the string **autosubmit** (case insenative) | - |
+
 
 # Data structure
 
