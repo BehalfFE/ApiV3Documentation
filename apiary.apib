@@ -419,68 +419,8 @@ After signup, a vendor can not make any changes to a customer's account.
 + Response 200 (application/json)
 
     + Attributes (Account)
-
-## Account Personal Address [/api/account/{accountId}/personalAddress]
-An account's personal address sub-resource. This resource contains location and contact details of the account's owner
-+ Parameters
-
-    + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
-
-### Update Personal Address [PUT]
-
-+ Request (application/json)
     
-    + Body
     
-            {
-                "streetAddress": "123rd 9th East st.",
-                "zipCode": "44321",
-                "apt_unit": "12c",
-                "phone": "9718332561"
-            }
-            
-+ Response 200 (application/json)
-    
-    + Body
-    
-            {
-                "accountId": "BHae12d442123",
-                "streetAddress": "123rd 9th East st.",
-                "zipCode": "44321",
-                "apt_unit": "12c",
-                "phone": "9718332561"
-            }
-
-## Account Business Address [/api/account/{accountId}/businessAddress]
-An account's business address sub-resource. This resource contains location and contact details of the account's business or company
-+ Parameters
-
-    + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
-
-### Update Business Address [PUT]
-
-+ Request (application/json)
-
-    + Body
-
-            {
-                "streetAddress": "123rd 9th East st.",
-                "zipCode": "44321",
-                "apt_unit": "12c",
-                "phone": "9718332561"
-            }
-            
-+ Response 200 (application/json)
-
-    + Body
-
-            {
-                "accountId": "BHae12d442123",
-                "streetAddress": "123rd 9th East st.",
-                "zipCode": "44321",
-                "apt_unit": "12c",
-                "phone": "9718332561"
-            }
 
 ### Update Account details [PUT /api/account/{accountId}]
 Update the details of an account. This action can only be performed on the authenticated user himself or by a linked vendor before the account has passed the signup process. After signup, a vendor may not make changes to a customer's account.
@@ -582,6 +522,69 @@ This action retrieves a list of account elements linked to the authenticated use
                 "page_size": 25,
                 "total_items": 1
             }
+
+## Account Personal Address [/api/account/{accountId}/personalAddress]
+An account's personal address sub-resource. This resource contains location and contact details of the account's owner
++ Parameters
+
+    + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
+
+### Update Personal Address [PUT]
+
++ Request (application/json)
+    
+    + Body
+    
+            {
+                "streetAddress": "123rd 9th East st.",
+                "zipCode": "44321",
+                "apt_unit": "12c",
+                "phone": "9718332561"
+            }
+            
++ Response 200 (application/json)
+    
+    + Body
+    
+            {
+                "accountId": "BHae12d442123",
+                "streetAddress": "123rd 9th East st.",
+                "zipCode": "44321",
+                "apt_unit": "12c",
+                "phone": "9718332561"
+            }
+
+## Account Business Address [/api/account/{accountId}/businessAddress]
+An account's business address sub-resource. This resource contains location and contact details of the account's business or company
++ Parameters
+
+    + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
+
+### Update Business Address [PUT]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "streetAddress": "123rd 9th East st.",
+                "zipCode": "44321",
+                "apt_unit": "12c",
+                "phone": "9718332561"
+            }
+            
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "accountId": "BHae12d442123",
+                "streetAddress": "123rd 9th East st.",
+                "zipCode": "44321",
+                "apt_unit": "12c",
+                "phone": "9718332561"
+            }
+
 
 ## Account Terms Resource [/api/account/{accountId}/terms?vendor=me]
 This is an Account sub-resource that describes the account's available Behalf Terms.
@@ -838,29 +841,26 @@ Payment entities include all the relevant information held by Behalf for a parti
                 }
             }
 
-### Create a New Payment [POST /api/payments/{?paymentId}?submit=no]
+### Create a New Payment [POST /api/payments/{?submit}]
 
 Create a new Payment entity with basic information.
 Both supplierCompanyId and customerCompanyId properties must be specified explicitly.
 
-**Note1**: The vendor can create this resource only for **his** customers
-(i.e. A vendor may only specify his own company-id in the **supplierCompanyId** property).
-
-**Note2**: There is an optional parameter in the query string - **origin** , to be used when it's a **renewal**
-of a previously approved Payment (e.g. from last year),
-where in that case its value should be set to the **paymentId** property of the original Payment (i.e. that from last year).
-
-**Note3**: There is an **optional** parameter in the query string - **submit** , which accepts the values **no|yes|try**.
-Passing **yes** will
-force an attempt to submit the payment, if it cannot be submitted the payment will not be created and an error will be returned. If **try** is
-passed the payment will be created and submitted only if possible.
-The default value is **no**, which will create a regular referred payment which is not submitted.
+The vendor can create this resource only for **his** customers (i.e. A vendor may only specify his own company-id in the **supplierCompanyId** property).
 
 The Response includes a **paymentId** property which will be used in any future requests regarding this Payment.
-Note that creating a Payment sends an email to the customer inviting him to confirm and submit the Payment
-(unless it's a **renewal** of a previously approved Payment or a new payment which is **submitted** immediately, where in these cases the customer will get an email notification that a Payment was created and submitted).
+Creating a Payment sends an email to the customer inviting him to confirm and submit the Payment.
 
-+ Request Normal Payment (application/json)
+The submit parameter accepts one of three values:
++ **yes** will create a payment and attempt to submit it. If submission is not possible an error will be returned
++ **try** will create a payment and submit it only if it is possible
++ **no** (Default) will create a regular referred payment which is not submitted automatically
+
++ Parameters
+    + submit (optional, string) ... auto-submit a payment
+
+
++ Request (application/json)
 
     + Body
 
@@ -872,8 +872,21 @@ Note that creating a Payment sends an email to the customer inviting him to conf
                 "description": "5 laptops",
                 "messageToBuyer": "hello"
             }
+            
++ Response 201 (applicatio/json)
 
-+ Request Recurring/Renewal Payment (application/json)
+    + Attributes(Payment)
+            
+### Create a Recurring/Renewal Payment [POST /api/payments/{paymentId}]
+
+This request creates a new payment based off of an old payment entity (renew a payment), identified by the **paymentId** parameter
+A renewed payment specifically does not send a notification email to the customer.
+
++ Parameters
+    + paymentId (required,string, `006J000000HwiPGIAZ`) paymentId of a past payment to be renewed
+
+
++ Request (application/json)
 
     + Body
 
@@ -887,7 +900,7 @@ Note that creating a Payment sends an email to the customer inviting him to conf
                 "recurring": true
             }
 
-+ Response 201 (applicatio/json)
++ Response 201 (application/json)
 
     + Body
 
@@ -1088,7 +1101,8 @@ accepets 'canceled' or 'confirm'
 Update the details of a previously referred Payment.
 The detail that can be updated are only the **orderId**, **description** or **messageToBuyer**.
 
-**Note:** This action can be performed by a vendor only on **his** Payments.
+**Note:** This action can only be performed by any user on his own payments
+
 + Parameters
     + paymentId (required, string, `BHae12d442123`) ... Unique identifier of the /payment resource
 
@@ -1215,15 +1229,15 @@ A resource which returns a payment object plans according to given duration in d
 
 ### Get Plans [GET]
 + Parameters
-    + payment_id (required, string, `006J000000Irr2qIAB`) ... Unique identifier of the /payments resource
-    + duration (required, number, `30`) ... Duration in days
+
+    + payment_id (required, string, `006J000000Irr2qIAB`) Unique identifier of the /payments resource
+    + duration (required, number, `30`) Duration in days
 
 + Response 200 (application/json)
 
     + Body
             
             {
-              [
                 "type": "Monthly",
                 "installmentsCount": 2,
                 "installmentAmount": 154.5,
@@ -1252,8 +1266,8 @@ A resource which returns a payment object plans according to given duration in d
                       "amount": 154.5
                   },
                 ]
-              ]
             }
+
             
 + Response 404 (application/json)
     
@@ -1449,3 +1463,30 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + customerId: BHae12d442123 (string)
 + vendorId: BHae12d442123 (string)
 + autoPay: false (boolean)
+
+## Payment (object)
++ paymentId: 006J000000HwiPGIAZ (string)
++ supplierCompanyId: 001J0000011DTrDIAW (string)
++ customerCompanyId: 001J000001YxXxwIAF (string)
++ supplierCompany
+    + name: Behalf Vendor (string)
++ customerCompany
+    + name: Behalf Customer (string)
++ amount: 345 (number)
++ status: REFERRED_TO_CUSTOMER (string)
++ termsAndConditions: false (boolean)
++ termsAndConditionsUrl: "" (string)
++ orderId: 976-ab-12 (string)
++ description: description text (string)
++ messageToBuyer: hello (string)
++ messageToSeller: "" (string)
++ referred: true (boolean)
++ submissionDate: 2015-02-22 (date)
++ initialDate: 2015-02-22 (date)
++ payDate: 2015-02-22 (date)
++ submitFailureReason: "" (string)
++ recurring: false (boolean)
++ autoPay: false (boolean)
++ _links
+    + self
+        + href: https://api.behalf.com/api/payments/006J000000HwiPGIAZ (string)
