@@ -788,6 +788,33 @@ Note the use of an array for the entity body. This is done to allows stacking of
     + Attributes (Agreements)
     + Attributes
         + autoPay: true (boolean)
+        
+## Contact Resource [/api/contact/]
+Contact resource describing creation of single contact which associated with Company. This resource is available to authenticated users for posting.
+
+### Create contact for account [POST]
+
+Create secondary contact which associated with Company. There is no limitation for contacts amount.
+
++ Request Mandatory parameters only (application/json)
+
+    + Body
+
+            {
+                "firstName": "firstname",
+                "lastName":  "lastname",
+                "accountId": "accountID"
+            }
+
+
++ Request All available parameters (application/json)
+
+    + Attributes (Contact Full)
+
++ Response 200 (application/json)
+
+    + Attributes (Account)
+
 
 # Group Payments
 All action URLs are assumed to have the /api prefix. This path directory is omitted from the examples and resource names for brevity.
@@ -1418,6 +1445,8 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + accountId: accountId (string)
 + firstName: first name (string)
 + lastName: last name (string)
++ title: title (string),
++ isOwner: true (boolean),
 + contact
     + contactId: contact-id (string)
     + email: email (string)
@@ -1426,6 +1455,16 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + birthDate: Date YYYY-MM-DD (string)
 + businessAddress (Address)
 + personalAddress (Address)
+
+## Contact Full (object)
++ accountId: account the contact belongs to (required, string)
++ firstName: first name (required, string)
++ lastName: last name (required, string)
++ title: title (string)
++ isOwner: true (boolean)
++ streetAddress: 1st 1st st. (string)
++ phone: 123-456-5487 (phone)
++ apt_unit: 12C (string)
 
 ## Address (object)
 + streetAddress: 1st 1st st. (string)
