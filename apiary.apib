@@ -446,9 +446,13 @@ Update the details of an account. This action can only be performed on the authe
             {
                 "contact":{
                     "email":"email"
+                },
+                "companyDetails": {
+                    "name": "company name",
+                    "industry": "company industry"
                 }
             }
-
+            
 + Response 200 (application/json)
 
     + Body
@@ -462,6 +466,7 @@ Update the details of an account. This action can only be performed on the authe
                 },
                 "companyDetails": {
                     "name": "company name",
+                    "industry": "company industry",
                 },
                 "_links": {
                     "self": {
@@ -1433,6 +1438,7 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
     + email: email (string)
 + companyDetails
     + name: company name (string)
+    + industry: company industry (string)
 + _links
     + self
         + href: https://behalf.com/api/account/accountIdd
@@ -1478,6 +1484,7 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + tin: TIN code (string)
 + website: http://website.com (string)
 + inceptionDate: 2002-12-25 (date)
++ industry: company industry (string)
 
 ## BankCreate (object)
 + accountId: account the bank belongs to (required, string)
