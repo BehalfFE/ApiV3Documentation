@@ -641,6 +641,11 @@ The user (vendor) will have to post this request again in a later time (e.g. wit
 
 In case the customer is not entitled for Behalf Terms - the Response will inclusde Code **532**.
 
+In order to support new **REVIEW** status, client have to provide
+*X-Behalf-Review-Support:true* header along with request. Response for that case will have **209** status code.
+If header not provided all **review** cases will go through **532** status code
+
+
 + Response 200 (application/json)
 
         {
