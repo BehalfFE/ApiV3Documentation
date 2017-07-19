@@ -454,13 +454,14 @@ After signup, a vendor can not make any changes to a customer's account.
 
 ### Update Account details [PUT /api/account/{accountId}]
 Update the details of an account. This action can only be performed on the authenticated user himself or by a linked vendor before the account has passed the signup process. After signup, a vendor may not make changes to a customer's account.
+When an authenticated user updates his own details, the Response payload will consist the business phone, website and address alongside rest of the company's information.
 + Parameters
 
     + accountId (required, string, `BHae12d442123`) Unique identifier of the /account resource
 
 + Response 200 (application/json)
 
-    + Attributes (Account)
+    + Attributes (Complete Account Details)
             
             Your customer’s email address can be edited at any point prior to sign-up.
             
@@ -479,7 +480,15 @@ Update the details of an account. This action can only be performed on the authe
                 },
                 "companyDetails": {
                     "name": "company name",
-                    "industry": "company industry"
+                    "tin": "company tin number",
+                    "industry": "company industry",
+                    "website": "company website"
+                },
+                "businessAddress": {
+                    "streetAddress" : "business street address",
+                    "apt_unit" : "business apartament/unit number",
+                    "zipcode" : "business zip code",
+                    "phone" : "business phone number",
                 }
             }
             
@@ -497,6 +506,13 @@ Update the details of an account. This action can only be performed on the authe
                 "companyDetails": {
                     "name": "company name",
                     "industry": "company industry",
+                    "phone": "business phone number",
+                    "website": "company website",
+                    "businessAddress": {
+                        "streetAddress": 'business street address',
+                        "apt_unit": "business apartament/unit number",
+                        "zipcode": "business zip code"
+                    }
                 },
                 "_links": {
                     "self": {
@@ -1464,6 +1480,27 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 
 # Data structure
 
+## Complete Account Details (object)
++ accountId: accountId (string)
++ firstName: first name (string)
++ lastName: last name (string)
++ contact
+    + contactId: contact-id (string)
+    + email: email (string)
++ companyDetails
+    + name: company name (string)
+    + industry: company industry (string)
+    + phone: company phone number (string)
+    + website: company website (string)
++ businessAddress (Business Address)
++ _links
+    + self
+        + href: https://behalf.com/api/account/accountIdd
+    + terms
+        + href: https://behalf.com/api/account/accountId/terms
+    + additionalData
+        + href: https://behalf.com/api/additional-data/link_id
+        
 ## Account (object)
 + accountId: accountId (string)
 + firstName: first name (string)
@@ -1481,6 +1518,11 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
         + href: https://behalf.com/api/account/accountId/terms
     + additionalData
         + href: https://behalf.com/api/additional-data/link_id
+
+## Address
++ streetAddress: street address (string)
++ apt_unit: apartament/unit number (string)
++ zipcode: zip code, digits only (string)
 
 ## Account Full (object)
 + accountId: accountId (string)
@@ -1507,7 +1549,7 @@ The {limit} parameter limits the number of suggestions that are returned. The hi
 + phone: 123-456-5487 (phone)
 + apt_unit: 12C (string)
 
-## Address (object)
+## Business Address (object)
 + streetAddress: 1st 1st st. (string)
 + zipcode: 12345 (string)
 + apt_unit: 12C (string)
